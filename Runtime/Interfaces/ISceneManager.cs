@@ -47,6 +47,55 @@ namespace MyGameDevTools.SceneLoading
         void SetActiveScene(Scene scene);
 
         /// <summary>
+        /// Triggers a transition to a group of scens.
+        /// It will transition from the current active scene (<see cref="GetActiveScene()"/>)
+        /// to a group of scenes (<paramref name="targetScenes"/>), with an optional intermediate loading scene (<paramref name="intermediateSceneInfo"/>).
+        /// If the <paramref name="intermediateSceneInfo"/> is not set, the transition will have no intermediate loading scene and will instead simply load the target scene directly.
+        /// The complete transition flow is:
+        /// <br/><br/>
+        /// 1. Load the intermediate scene (if provided).<br/>
+        /// 2. Unload the source scene (if any).<br/>
+        /// 3. Load all target scenes.<br/>
+        /// 4. Unload the intermediate scene (if provided).<br/>
+        /// </summary>
+        /// <param name="targetScenes">
+        /// A reference to all scenes that will be transitioned to.
+        /// </param>
+        /// <param name="setIndexActive">
+        /// Index of the scene in the <paramref name="targetScenes"/> to be set as the active scene.
+        /// </param>
+        /// <param name="intermediateSceneInfo">
+        /// A reference to the scene that's going to be loaded as the transition intermediate (as a loading scene).
+        /// If null, the transition will not have an intermediate loading scene.
+        /// </param>
+        /// <param name="token">Optional token to manually cancel the operation. Note that Unity Scene Manager operations cannot be manually canceled and will continue to run.</param>
+        /// <returns>A <see cref="System.Threading.Tasks.ValueTask{TResult}"/> with all scenes loaded.</returns>
+        ValueTask<Scene[]> TransitionToScenesAsync(ILoadSceneInfo[] targetScenes, int setIndexActive, ILoadSceneInfo intermediateSceneReference = default, CancellationToken token = default);
+
+        /// <summary>
+        /// Triggers a scene transition.
+        /// It will transition from the current active scene (<see cref="GetActiveScene()"/>)
+        /// to the target scene (<paramref name="targetSceneInfo"/>), with an optional intermediate loading scene (<paramref name="intermediateSceneInfo"/>).
+        /// If the <paramref name="intermediateSceneInfo"/> is not set, the transition will have no intermediate loading scene and will instead simply load the target scene directly.
+        /// The complete transition flow is:
+        /// <br/><br/>
+        /// 1. Load the intermediate scene (if provided).<br/>
+        /// 2. Unload the source scene (if any).<br/>
+        /// 3. Load the target scene.<br/>
+        /// 4. Unload the intermediate scene (if provided).<br/>
+        /// </summary>
+        /// <param name="targetSceneInfo">
+        /// A reference to the scene that's going to be transitioned to.
+        /// </param>
+        /// <param name="intermediateSceneInfo">
+        /// A reference to the scene that's going to be loaded as the transition intermediate (as a loading scene).
+        /// If null, the transition will not have an intermediate loading scene.
+        /// </param>
+        /// <param name="token">Optional token to manually cancel the operation. Note that Unity Scene Manager operations cannot be manually canceled and will continue to run.</param>
+        /// <returns>A <see cref="System.Threading.Tasks.ValueTask{TResult}"/> with the loaded scene as the result.</returns>
+        ValueTask<Scene> TransitionToSceneAsync(ILoadSceneInfo targetSceneReference, ILoadSceneInfo intermediateSceneReference = default, CancellationToken token = default);
+
+        /// <summary>
         /// Loads all scenes provided by the <paramref name="sceneInfos"/> array in parallel.
         /// You may also provide the desired index to set as the active scene through the <paramref name="setIndexActive"/> parameter.
         /// Also, you can pass an <see cref="IProgress{T}"/> object to receive the average progress of all loading operations, from 0 to 1.

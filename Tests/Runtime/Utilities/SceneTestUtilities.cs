@@ -16,9 +16,6 @@ namespace MyGameDevTools.SceneLoading.Tests
                 lastScene = sceneManager.GetLastLoadedScene();
             }
 
-            while (sceneManager.LoadedSceneCount > 0)
-                yield return new WaitUntil(() => sceneManager.LoadedSceneCount == 0);
-
             Assert.Zero(sceneManager.LoadedSceneCount);
             Assert.False(sceneManager.GetActiveScene().IsValid());
         }

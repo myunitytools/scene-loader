@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using System;
 using System.Collections;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 
@@ -65,6 +66,56 @@ namespace MyGameDevTools.SceneLoading.Tests
             manager.Dispose();
             yield return waitTask;
             Assert.True(waitTask.Task.IsCanceled);
+        }
+
+        [UnityTest]
+        public IEnumerator Dispose_DuringTransitionToSceneAsync([ValueSource(nameof(_sceneManagerCreateFuncs))] Func<ISceneManager> managerCreateFunc, [ValueSource(typeof(SceneTestEnvironment), nameof(SceneTestEnvironment.SingleLoadSceneInfoList))] ILoadSceneInfo targetScene, [ValueSource(typeof(SceneManagerTests), nameof(SceneManagerTests.LoadingSceneInfos))] ILoadSceneInfo loadingScene)
+        {
+            async Awaitable Test()
+            {
+                ISceneManager manager = managerCreateFunc();
+                await SceneManagerTests.LoadFirstScene(manager).Task;
+
+                var task = manager.TransitionToSceneAsync(targetScene, loadingScene);
+                manager.Dispose();
+
+                bool canceled = false;
+                try
+                {
+                    await task;
+                }
+                catch (OperationCanceledException)
+                {
+                    canceled = true;
+                }
+                Assert.True(canceled);
+            }
+            return Test();
+        }
+
+        [UnityTest]
+        public IEnumerator Dispose_DuringTransitionToScenesAsync([ValueSource(nameof(_sceneManagerCreateFuncs))] Func<ISceneManager> managerCreateFunc, [ValueSource(typeof(SceneTestEnvironment), nameof(SceneTestEnvironment.MultipleLoadSceneInfoList))] ILoadSceneInfo[] targetScenes, [ValueSource(typeof(SceneManagerTests), nameof(SceneManagerTests.LoadingSceneInfos))] ILoadSceneInfo loadingScene)
+        {
+            async Awaitable Test()
+            {
+                ISceneManager manager = managerCreateFunc();
+                await SceneManagerTests.LoadFirstScene(manager).Task;
+
+                var task = manager.TransitionToScenesAsync(targetScenes, 0, loadingScene);
+                manager.Dispose();
+
+                bool canceled = false;
+                try
+                {
+                    await task;
+                }
+                catch (OperationCanceledException)
+                {
+                    canceled = true;
+                }
+                Assert.True(canceled);
+            }
+            return Test();
         }
     }
 }

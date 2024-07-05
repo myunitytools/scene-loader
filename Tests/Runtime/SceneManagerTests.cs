@@ -12,6 +12,13 @@ namespace MyGameDevTools.SceneLoading.Tests
 {
     public partial class SceneManagerTests : SceneTestBase
     {
+        public static readonly ILoadSceneInfo[] LoadingSceneInfos = new ILoadSceneInfo[]
+        {
+            null,
+            new LoadSceneInfoName(SceneBuilder.SceneNames[3]),
+            new LoadSceneInfoName(SceneBuilder.SceneNames[0]),
+        };
+
         static readonly bool[] _setActiveParameterValues = new bool[] { true, false };
 
         static readonly int[] _setIndexActiveParameterValues = new int[] { -1, 1 };
@@ -104,7 +111,7 @@ namespace MyGameDevTools.SceneLoading.Tests
 
             Assert.Throws<InvalidOperationException>(() => manager.SetActiveScene(loadedScene));
 
-            yield return SceneManager.UnloadSceneAsync(SceneBuilder.SceneNames[1]);
+            yield return SceneManager.UnloadSceneAsync(loadedScene);
 
             void assignLoadedScene(Scene scene, LoadSceneMode loadSceneMode)
             {
@@ -341,6 +348,71 @@ namespace MyGameDevTools.SceneLoading.Tests
         }
 
         [UnityTest]
+        public IEnumerator TransitionToScenes([ValueSource(typeof(SceneTestEnvironment), nameof(SceneTestEnvironment.SceneManagers))] ISceneManager manager, [ValueSource(typeof(SceneTestEnvironment), nameof(SceneTestEnvironment.MultipleLoadSceneInfoList))] ILoadSceneInfo[] targetScenes, [ValueSource(nameof(LoadingSceneInfos))] ILoadSceneInfo loadingScene)
+        {
+            yield return LoadFirstScene(manager);
+
+            int sceneCount = targetScenes.Length;
+
+            var task = manager.TransitionToScenesAsync(targetScenes, 0, loadingScene).AsTask();
+
+            yield return new WaitTask<Scene[]>(task);
+
+            Scene[] loadedScenes = task.Result;
+            Assert.AreEqual(sceneCount, loadedScenes.Length);
+
+            yield return new WaitUntil(() => manager.TotalSceneCount == sceneCount);
+        }
+
+        [UnityTest]
+        public IEnumerator Transition([ValueSource(typeof(SceneTestEnvironment), nameof(SceneTestEnvironment.SceneManagers))] ISceneManager manager, [ValueSource(typeof(SceneTestEnvironment), nameof(SceneTestEnvironment.SingleLoadSceneInfoList))] ILoadSceneInfo targetScene, [ValueSource(nameof(LoadingSceneInfos))] ILoadSceneInfo loadingScene)
+        {
+            yield return LoadFirstScene(manager);
+
+            var task = manager.TransitionToSceneAsync(targetScene, loadingScene).AsTask();
+
+            yield return new WaitTask<Scene>(task);
+
+            Scene loadedScene = task.Result;
+            Assert.AreEqual(loadedScene, manager.GetActiveScene());
+
+            yield return new WaitUntil(() => manager.TotalSceneCount == 1);
+        }
+
+        [UnityTest]
+        public IEnumerator Transition_NoSourceScene([ValueSource(typeof(SceneTestEnvironment), nameof(SceneTestEnvironment.SceneManagers))] ISceneManager manager, [ValueSource(typeof(SceneTestEnvironment), nameof(SceneTestEnvironment.SingleLoadSceneInfoList))] ILoadSceneInfo targetScene, [ValueSource(nameof(LoadingSceneInfos))] ILoadSceneInfo loadingScene)
+        {
+            int expectedLoadedScenes = loadingScene == null ? 1 : 2;
+            // If there's no loading scene, the scene loader will create a temporary scene
+            // for the transition, and will unload it after the transition is complete.
+            int expectedUnloadedScenes = 1;
+
+            int unloadedScenesCount = 0;
+
+            // The temporary scene unload does not go through the ISceneManager
+            SceneManager.sceneUnloaded += sceneUnloaded;
+
+            var task = manager.TransitionToSceneAsync(targetScene, loadingScene).AsTask();
+
+            yield return new WaitTask<Scene>(task);
+
+            Scene loadedScene = task.Result;
+
+            SceneManager.sceneUnloaded -= sceneUnloaded;
+
+            Assert.AreEqual(loadedScene, manager.GetActiveScene());
+            Assert.AreEqual(expectedLoadedScenes, _scenesLoaded);
+            Assert.AreEqual(expectedUnloadedScenes, unloadedScenesCount);
+
+            yield return new WaitUntil(() => manager.TotalSceneCount == 1);
+
+            void sceneUnloaded(Scene scene)
+            {
+                unloadedScenesCount++;
+            }
+        }
+
+        [UnityTest]
         public IEnumerator LoadByInfo_UnloadByScene([ValueSource(typeof(SceneTestEnvironment), nameof(SceneTestEnvironment.SceneManagers))] ISceneManager manager, [ValueSource(typeof(SceneTestEnvironment), nameof(SceneTestEnvironment.SingleLoadSceneInfoList))] ILoadSceneInfo sceneInfo)
         {
             var task = manager.LoadSceneAsync(sceneInfo).AsTask();
@@ -354,6 +426,15 @@ namespace MyGameDevTools.SceneLoading.Tests
             yield return new WaitTask<Scene>(task);
 
             Assert.Zero(manager.LoadedSceneCount);
+        }
+
+        /// <summary>
+        /// Required to test transition some scenarios.
+        /// </summary>
+        public static WaitTask<Scene> LoadFirstScene(ISceneManager sceneManager)
+        {
+            var task = sceneManager.LoadSceneAsync(new LoadSceneInfoName(SceneBuilder.SceneNames[1]), true).AsTask();
+            return new WaitTask<Scene>(task);
         }
 
         void ReportSceneActivation(Scene previousScene, Scene newScene)

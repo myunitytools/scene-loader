@@ -383,7 +383,7 @@ namespace MyGameDevTools.SceneLoading.Tests
         public IEnumerator Transition_NoSourceScene([ValueSource(typeof(SceneTestEnvironment), nameof(SceneTestEnvironment.SceneManagers))] ISceneManager manager, [ValueSource(typeof(SceneTestEnvironment), nameof(SceneTestEnvironment.SingleLoadSceneInfoList))] ILoadSceneInfo targetScene, [ValueSource(nameof(LoadingSceneInfos))] ILoadSceneInfo loadingScene)
         {
             int expectedLoadedScenes = loadingScene == null ? 1 : 2;
-            // If there's no loading scene, the scene loader will create a temporary scene
+            // If there's no loading scene, the scene manager will create a temporary scene
             // for the transition, and will unload it after the transition is complete.
             int expectedUnloadedScenes = 1;
 

@@ -70,7 +70,7 @@ namespace MyGameDevTools.SceneLoading
         /// </param>
         /// <param name="token">Optional token to manually cancel the operation. Note that Unity Scene Manager operations cannot be manually canceled and will continue to run.</param>
         /// <returns>A <see cref="System.Threading.Tasks.ValueTask{TResult}"/> with all scenes loaded.</returns>
-        ValueTask<Scene[]> TransitionToScenesAsync(ILoadSceneInfo[] targetScenes, int setIndexActive, ILoadSceneInfo intermediateSceneReference = default, CancellationToken token = default);
+        ValueTask<SceneResult> TransitionToScenesAsync(ILoadSceneInfo[] targetScenes, int setIndexActive, ILoadSceneInfo intermediateSceneReference = default, CancellationToken token = default);
 
         /// <summary>
         /// Triggers a scene transition.
@@ -93,7 +93,7 @@ namespace MyGameDevTools.SceneLoading
         /// </param>
         /// <param name="token">Optional token to manually cancel the operation. Note that Unity Scene Manager operations cannot be manually canceled and will continue to run.</param>
         /// <returns>A <see cref="System.Threading.Tasks.ValueTask{TResult}"/> with the loaded scene as the result.</returns>
-        ValueTask<Scene> TransitionToSceneAsync(ILoadSceneInfo targetSceneReference, ILoadSceneInfo intermediateSceneReference = default, CancellationToken token = default);
+        ValueTask<SceneResult> TransitionToSceneAsync(ILoadSceneInfo targetSceneReference, ILoadSceneInfo intermediateSceneReference = default, CancellationToken token = default);
 
         /// <summary>
         /// Loads all scenes provided by the <paramref name="sceneInfos"/> array in parallel.
@@ -107,7 +107,7 @@ namespace MyGameDevTools.SceneLoading
         /// <returns>A <see cref="System.Threading.Tasks.ValueTask{TResult}"/> with all scenes loaded.</returns>
         /// <exception cref="ArgumentException">When scene info group is null, empty or the setIndexName is bigger than the scene length.</exception>
         /// <exception cref="InvalidOperationException">When the provided scene info group fails to produce valid load scene operations.</exception>
-        ValueTask<Scene[]> LoadScenesAsync(ILoadSceneInfo[] sceneInfos, int setIndexActive = -1, IProgress<float> progress = null, CancellationToken token = default);
+        ValueTask<SceneResult> LoadScenesAsync(ILoadSceneInfo[] sceneInfos, int setIndexActive = -1, IProgress<float> progress = null, CancellationToken token = default);
 
         /// <summary>
         /// Loads a scene referenced by the <paramref name="sceneInfo"/>, optionally enabling it as the active scene.
@@ -120,7 +120,7 @@ namespace MyGameDevTools.SceneLoading
         /// <returns>A <see cref="System.Threading.Tasks.ValueTask{TResult}"/> with the loaded scene as the result.</returns>
         /// <exception cref="ArgumentException">When scene info is null.</exception>
         /// <exception cref="InvalidOperationException">When the provided scene info fails to produce a valid load scene operation.</exception>
-        ValueTask<Scene> LoadSceneAsync(ILoadSceneInfo sceneInfo, bool setActive = false, IProgress<float> progress = null, CancellationToken token = default);
+        ValueTask<SceneResult> LoadSceneAsync(ILoadSceneInfo sceneInfo, bool setActive = false, IProgress<float> progress = null, CancellationToken token = default);
 
         /// <summary>
         /// Unloads all scenes provided by the <paramref name="sceneInfos"/> array in parallel.
@@ -134,7 +134,7 @@ namespace MyGameDevTools.SceneLoading
         /// </returns>
         /// <exception cref="ArgumentException">When scene info group is null or empty.</exception>
         /// <exception cref="InvalidOperationException">When the provided scene info group fails to produce valid unload scene operations.</exception>
-        ValueTask<Scene[]> UnloadScenesAsync(ILoadSceneInfo[] sceneInfos, CancellationToken token = default);
+        ValueTask<SceneResult> UnloadScenesAsync(ILoadSceneInfo[] sceneInfos, CancellationToken token = default);
 
         /// <summary>
         /// Unloads a scene referenced by the <paramref name="sceneInfo"/>.
@@ -148,7 +148,7 @@ namespace MyGameDevTools.SceneLoading
         /// </returns>
         /// <exception cref="ArgumentException">When scene info is null.</exception>
         /// <exception cref="InvalidOperationException">When the provided scene info fails to produce a valid unload scene operation.</exception>
-        ValueTask<Scene> UnloadSceneAsync(ILoadSceneInfo sceneInfo, CancellationToken token = default);
+        ValueTask<SceneResult> UnloadSceneAsync(ILoadSceneInfo sceneInfo, CancellationToken token = default);
 
         /// <summary>
         /// Gets the current active scene in this <see cref="ISceneManager"/> instance.

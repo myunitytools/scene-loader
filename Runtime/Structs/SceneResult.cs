@@ -38,23 +38,26 @@ namespace MyGameDevTools.SceneLoading
 
         public override string ToString()
         {
+            if (!_singleScene.IsValid())
+                return "Empty SceneResult";
+
             int sceneCount = (_sceneArray == null || _sceneArray.Length == 0) ? 1 : _sceneArray.Length;
 
             StringBuilder builder = new("{ ");
             if (sceneCount == 1)
             {
                 builder.Append(_singleScene.name);
+                builder.Append(" }");
+                return builder.ToString();
             }
-            else
+
+            for (int i = 0; i < sceneCount; i++)
             {
-                for (int i = 0; i < sceneCount; i++)
+                if (i > 0)
                 {
-                    if (i > 0)
-                    {
-                        builder.Append(",");
-                    }
-                    builder.Append(_sceneArray[i].name);
+                    builder.Append(", ");
                 }
+                builder.Append(_sceneArray[i].name);
             }
 
             builder.Append(" }");

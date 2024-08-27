@@ -26,7 +26,7 @@ namespace MyGameDevTools.SceneLoading.Tests
         public IEnumerator Dispose_DuringLoadScene([ValueSource(nameof(_sceneManagerCreateFuncs))] Func<ISceneManager> managerCreateFunc, [ValueSource(typeof(SceneTestEnvironment), nameof(SceneTestEnvironment.SingleLoadSceneInfoList))] ILoadSceneInfo sceneInfo)
         {
             ISceneManager manager = managerCreateFunc();
-            WaitTask<Scene> waitTask = new(manager.LoadSceneAsync(sceneInfo).AsTask());
+            WaitTask<SceneResult> waitTask = new(manager.LoadSceneAsync(sceneInfo).AsTask());
             manager.Dispose();
             yield return waitTask;
             Assert.That(waitTask.Task.IsCompleted);
@@ -36,7 +36,7 @@ namespace MyGameDevTools.SceneLoading.Tests
         public IEnumerator Dispose_DuringLoadScenes([ValueSource(nameof(_sceneManagerCreateFuncs))] Func<ISceneManager> managerCreateFunc, [ValueSource(typeof(SceneTestEnvironment), nameof(SceneTestEnvironment.MultipleLoadSceneInfoList))] ILoadSceneInfo[] sceneInfos)
         {
             ISceneManager manager = managerCreateFunc();
-            WaitTask<Scene[]> waitTask = new(manager.LoadScenesAsync(sceneInfos).AsTask());
+            WaitTask<SceneResult> waitTask = new(manager.LoadScenesAsync(sceneInfos).AsTask());
             manager.Dispose();
             yield return waitTask;
             Assert.True(waitTask.Task.IsCanceled);
@@ -46,7 +46,7 @@ namespace MyGameDevTools.SceneLoading.Tests
         public IEnumerator Dipose_DuringUnloadScene([ValueSource(nameof(_sceneManagerCreateFuncs))] Func<ISceneManager> managerCreateFunc, [ValueSource(typeof(SceneTestEnvironment), nameof(SceneTestEnvironment.SingleLoadSceneInfoList))] ILoadSceneInfo sceneInfo)
         {
             ISceneManager manager = managerCreateFunc();
-            WaitTask<Scene> waitTask = new(manager.LoadSceneAsync(sceneInfo).AsTask());
+            WaitTask<SceneResult> waitTask = new(manager.LoadSceneAsync(sceneInfo).AsTask());
             yield return waitTask;
 
             waitTask = new(manager.UnloadSceneAsync(sceneInfo).AsTask());
@@ -59,7 +59,7 @@ namespace MyGameDevTools.SceneLoading.Tests
         public IEnumerator Dipose_DuringUnloadScenes([ValueSource(nameof(_sceneManagerCreateFuncs))] Func<ISceneManager> managerCreateFunc, [ValueSource(typeof(SceneTestEnvironment), nameof(SceneTestEnvironment.MultipleLoadSceneInfoList))] ILoadSceneInfo[] sceneInfos)
         {
             ISceneManager manager = managerCreateFunc();
-            WaitTask<Scene[]> waitTask = new(manager.LoadScenesAsync(sceneInfos).AsTask());
+            WaitTask<SceneResult> waitTask = new(manager.LoadScenesAsync(sceneInfos).AsTask());
             yield return waitTask;
 
             waitTask = new(manager.UnloadScenesAsync(sceneInfos).AsTask());

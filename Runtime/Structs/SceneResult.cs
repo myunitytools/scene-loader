@@ -64,4 +64,45 @@ namespace MyGameDevTools.SceneLoading
             return builder.ToString();
         }
     }
+
+    public readonly struct SceneParameter
+    {
+        readonly ILoadSceneInfo[] _loadSceneInfoArray;
+        readonly ILoadSceneInfo _singleLoadSceneInfo;
+        readonly int _setIndexActive;
+
+        public SceneParameter(ILoadSceneInfo[] loadSceneInfos, int setIndexActive = -1)
+        {
+            _loadSceneInfoArray = loadSceneInfos;
+            _singleLoadSceneInfo = loadSceneInfos[0];
+            _setIndexActive = setIndexActive;
+        }
+
+        public SceneParameter(ILoadSceneInfo loadSceneInfo, bool setActive = false)
+        {
+            _loadSceneInfoArray = null;
+            _singleLoadSceneInfo = loadSceneInfo;
+            _setIndexActive = setActive ? 0 : -1;
+        }
+
+        public readonly ILoadSceneInfo GetLoadSceneInfo()
+        {
+            return _singleLoadSceneInfo;
+        }
+
+        public readonly ILoadSceneInfo[] GetLoadSceneInfos()
+        {
+            return _loadSceneInfoArray;
+        }
+
+        public readonly bool ShouldSetActive()
+        {
+            return _setIndexActive == 0;
+        }
+
+        public readonly int GetIndexActive()
+        {
+            return _setIndexActive;
+        }
+    }
 }

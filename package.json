@@ -1,6 +1,6 @@
 {
   "name": "com.mygamedevtools.scene-loader",
-  "version": "3.1.0",
+  "version": "3.2.0-pre.1",
   "displayName": "Advanced Scene Manager",
   "description": "This package simplifies scene operations: load, unload and transition. In a quick example:\n\n▐ // Unity Manager scene transition\n▐ yield return SceneManager.LoadSceneAsync(\"my-loading-scene\",\n▐        LoadSceneMode.Additive);\n▐ yield return SceneManager.LoadSceneAsync(\"my-target-scene\",\n▐        LoadSceneMode.Additive);\n▐\n▐ SceneManager.SetActiveScene(\n▐        SceneManager.GetSceneByName(\"my-target-scene\"));\n▐\n▐ SceneManager.UnloadSceneAsync(\"my-loading-scene\");\n▐ SceneManager.UnloadSceneAsync(\"my-previous-scene\");\n▐\n▐ // Advanced Scene Management scene transition\n▐ sceneLoader.TransitionToScene(\n▐        new LoadSceneInfoName(\"my-target-scene\"),\n▐        new LoadSceneInfoName(\"my-loading-scene\"));\n\nYou can also take advantage of these features:\n\n▪ Unified API for addressable and non-addressable scenes.\n▪ Awaitable scene operations.\n▪ Modular implementation with interfaces.\n▪ Load, unload or transition to multiple scenes.",
   "unity": "2021.3",

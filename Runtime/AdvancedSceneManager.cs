@@ -136,55 +136,31 @@ namespace MyGameDevTools.SceneLoading
             throw new ArgumentException($"[{GetType().Name}] Could not find any loaded scene with the name '{name}'.", nameof(name));
         }
 
-        public ValueTask<SceneResult> TransitionToScenesAsync(ILoadSceneInfo[] targetScenes, int setIndexActive, ILoadSceneInfo intermediateSceneReference = null, CancellationToken token = default)
+        public ValueTask<SceneResult> TransitionAsync(SceneParameters sceneParameters, ILoadSceneInfo intermediateSceneReference = null, CancellationToken token = default)
         {
             CancellationTokenSource linkedSource = CancellationTokenSource.CreateLinkedTokenSource(_lifetimeTokenSource.Token, token);
             return intermediateSceneReference == null
-                ? TransitionDirectlyAsync(targetScenes, setIndexActive, linkedSource.Token).RunAndDisposeToken(linkedSource)
-                : TransitionWithIntermediateAsync(targetScenes, setIndexActive, intermediateSceneReference, linkedSource.Token).RunAndDisposeToken(linkedSource);
+                ? TransitionDirectlyAsync(sceneParameters, linkedSource.Token).RunAndDisposeToken(linkedSource)
+                : TransitionWithIntermediateAsync(sceneParameters, intermediateSceneReference, linkedSource.Token).RunAndDisposeToken(linkedSource);
         }
 
-        public ValueTask<SceneResult> TransitionToSceneAsync(ILoadSceneInfo targetSceneInfo, ILoadSceneInfo intermediateSceneInfo = default, CancellationToken token = default)
+        public ValueTask<SceneResult> LoadAsync(SceneParameters sceneParameters, IProgress<float> progress = null, CancellationToken token = default)
         {
             CancellationTokenSource linkedSource = CancellationTokenSource.CreateLinkedTokenSource(_lifetimeTokenSource.Token, token);
-            return TransitionToScenesAsync(new ILoadSceneInfo[] { targetSceneInfo }, 0, intermediateSceneInfo, linkedSource.Token);
+            return LoadScenesAsync_Internal(sceneParameters, progress, linkedSource.Token);
         }
 
-        public ValueTask<SceneResult> LoadScenesAsync(ILoadSceneInfo[] sceneInfos, int setIndexActive = -1, IProgress<float> progress = null, CancellationToken token = default)
+        public ValueTask<SceneResult> UnloadAsync(SceneParameters sceneParameters, CancellationToken token = default)
         {
             CancellationTokenSource linkedSource = CancellationTokenSource.CreateLinkedTokenSource(_lifetimeTokenSource.Token, token);
-            return LoadScenesAsync_Internal(sceneInfos, setIndexActive, progress, linkedSource.Token);
+            return UnloadScenesAsync_Internal(sceneParameters.GetLoadSceneInfos(), linkedSource.Token);
         }
 
-        public ValueTask<SceneResult> LoadSceneAsync(ILoadSceneInfo sceneInfo, bool setActive = false, IProgress<float> progress = null, CancellationToken token = default)
+        async ValueTask<SceneResult> LoadScenesAsync_Internal(SceneParameters sceneParameters, IProgress<float> progress, CancellationToken token)
         {
-            sceneInfo = sceneInfo ?? throw new NullReferenceException($"[{GetType().Name}] Provided scene info is null.");
-
-            CancellationTokenSource linkedSource = CancellationTokenSource.CreateLinkedTokenSource(_lifetimeTokenSource.Token, token);
-            return LoadScenesAsync_Internal(new ILoadSceneInfo[] { sceneInfo }, setActive ? 0 : -1, progress, linkedSource.Token);
-        }
-
-        public ValueTask<SceneResult> UnloadScenesAsync(ILoadSceneInfo[] sceneInfos, CancellationToken token = default)
-        {
-            CancellationTokenSource linkedSource = CancellationTokenSource.CreateLinkedTokenSource(_lifetimeTokenSource.Token, token);
-            return UnloadScenesAsync_Internal(sceneInfos, linkedSource.Token);
-        }
-
-        public ValueTask<SceneResult> UnloadSceneAsync(ILoadSceneInfo sceneInfo, CancellationToken token = default)
-        {
-            sceneInfo = sceneInfo ?? throw new ArgumentNullException(nameof(sceneInfo), $"[{GetType().Name}] Provided scene info is null.");
-
-            CancellationTokenSource linkedSource = CancellationTokenSource.CreateLinkedTokenSource(_lifetimeTokenSource.Token, token);
-            return UnloadScenesAsync_Internal(new ILoadSceneInfo[] { sceneInfo }, linkedSource.Token);
-        }
-
-        async ValueTask<SceneResult> LoadScenesAsync_Internal(ILoadSceneInfo[] sceneInfos, int setIndexActive, IProgress<float> progress, CancellationToken token)
-        {
+            ILoadSceneInfo[] sceneInfos = sceneParameters.GetLoadSceneInfos();
+            int setIndexActive = sceneParameters.GetIndexActive();
             int scenesToLoad = sceneInfos.Length;
-            if (sceneInfos == null || scenesToLoad == 0)
-                throw new ArgumentException(nameof(sceneInfos), $"[{GetType().Name}] Provided scene group is null or empty.");
-            if (setIndexActive >= scenesToLoad)
-                throw new ArgumentException(nameof(setIndexActive), $"[{GetType().Name}] Provided index to set active is bigger than the provided scene group size.");
 
             ISceneData[] sceneDataArray = new ISceneData[scenesToLoad];
             int i;
@@ -264,7 +240,7 @@ namespace MyGameDevTools.SceneLoading
             return new SceneResult(SceneDataUtilities.GetScenesFromSceneDataArray(sceneDataArray));
         }
 
-        async ValueTask<SceneResult> TransitionDirectlyAsync(ILoadSceneInfo[] targetScenes, int setIndexActive, CancellationToken token)
+        async ValueTask<SceneResult> TransitionDirectlyAsync(SceneParameters sceneParameters, CancellationToken token)
         {
             // If only one scene is loaded, we need to create a temporary scene for transition.
             Scene tempScene = default;
@@ -274,7 +250,7 @@ namespace MyGameDevTools.SceneLoading
             }
             await UnloadSourceSceneAsync(token);
 
-            Scene[] loadedScenes = await LoadScenesAsync(targetScenes, setIndexActive, token: token);
+            Scene[] loadedScenes = await LoadAsync(sceneParameters, token: token);
 
             if (tempScene.IsValid())
             {
@@ -283,12 +259,12 @@ namespace MyGameDevTools.SceneLoading
             return new SceneResult(loadedScenes);
         }
 
-        async ValueTask<SceneResult> TransitionWithIntermediateAsync(ILoadSceneInfo[] targetScenes, int setIndexActive, ILoadSceneInfo intermediateSceneInfo, CancellationToken token)
+        async ValueTask<SceneResult> TransitionWithIntermediateAsync(SceneParameters sceneParameters, ILoadSceneInfo intermediateSceneInfo, CancellationToken token)
         {
             Scene loadingScene;
             try
             {
-                loadingScene = await LoadSceneAsync(intermediateSceneInfo, token: token);
+                loadingScene = await LoadAsync(new SceneParameters(intermediateSceneInfo, false), token: token);
             }
             catch
             {
@@ -303,11 +279,11 @@ namespace MyGameDevTools.SceneLoading
             LoadingBehavior loadingBehavior = UnityEngine.Object.FindObjectsOfType<LoadingBehavior>().FirstOrDefault(l => l.gameObject.scene == loadingScene);
 #endif
             return loadingBehavior
-                ? await TransitionWithIntermediateLoadingAsync(targetScenes, setIndexActive, intermediateSceneInfo, loadingBehavior, token)
-                : await TransitionWithIntermediateNoLoadingAsync(targetScenes, setIndexActive, intermediateSceneInfo, token);
+                ? await TransitionWithIntermediateLoadingAsync(sceneParameters, intermediateSceneInfo, loadingBehavior, token)
+                : await TransitionWithIntermediateNoLoadingAsync(sceneParameters, intermediateSceneInfo, token);
         }
 
-        async ValueTask<SceneResult> TransitionWithIntermediateLoadingAsync(ILoadSceneInfo[] targetScenes, int setIndexActive, ILoadSceneInfo intermediateSceneInfo, LoadingBehavior loadingBehavior, CancellationToken token)
+        async ValueTask<SceneResult> TransitionWithIntermediateLoadingAsync(SceneParameters sceneParameters, ILoadSceneInfo intermediateSceneInfo, LoadingBehavior loadingBehavior, CancellationToken token)
         {
             LoadingProgress progress = loadingBehavior.Progress;
             while (progress.State != LoadingState.Loading && !token.IsCancellationRequested)
@@ -315,21 +291,21 @@ namespace MyGameDevTools.SceneLoading
 
             await UnloadSourceSceneAsync(token);
 
-            Scene[] loadedScenes = await LoadScenesAsync(targetScenes, setIndexActive, progress, token);
+            Scene[] loadedScenes = await LoadAsync(sceneParameters, progress, token);
             progress.SetState(LoadingState.TargetSceneLoaded);
 
             while (progress.State != LoadingState.TransitionComplete && !token.IsCancellationRequested)
                 await Awaitable.NextFrameAsync(token);
 
-            await UnloadSceneAsync(intermediateSceneInfo, token);
+            await UnloadAsync(new SceneParameters(intermediateSceneInfo), token);
             return new SceneResult(loadedScenes);
         }
 
-        async ValueTask<SceneResult> TransitionWithIntermediateNoLoadingAsync(ILoadSceneInfo[] targetScenes, int setIndexActive, ILoadSceneInfo intermediateSceneInfo, CancellationToken token)
+        async ValueTask<SceneResult> TransitionWithIntermediateNoLoadingAsync(SceneParameters sceneParameters, ILoadSceneInfo intermediateSceneInfo, CancellationToken token)
         {
             await UnloadSourceSceneAsync(token);
-            Scene[] loadedScenes = await LoadScenesAsync(targetScenes, setIndexActive, token: token);
-            await UnloadSceneAsync(intermediateSceneInfo, token);
+            Scene[] loadedScenes = await LoadAsync(sceneParameters, token: token);
+            await UnloadAsync(new SceneParameters(intermediateSceneInfo), token);
             return new SceneResult(loadedScenes);
         }
 
@@ -339,7 +315,7 @@ namespace MyGameDevTools.SceneLoading
             if (!sourceScene.IsValid())
                 return default;
 
-            return UnloadSceneAsync(new LoadSceneInfoScene(sourceScene), token);
+            return UnloadAsync(new SceneParameters(new LoadSceneInfoScene(sourceScene)), token);
         }
     }
 }

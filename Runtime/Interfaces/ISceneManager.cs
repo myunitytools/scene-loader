@@ -90,7 +90,7 @@ namespace MyGameDevTools.SceneLoading
         /// Unloads the target scene or group of scenes provided via a <see cref="SceneParameters"/> struct.
         /// </summary>
         /// <param name="sceneParameters">
-        /// A <see cref="SceneParameters"/> struct that may hold one or more scenes and the target active index.
+        /// A <see cref="SceneParameters"/> struct that may hold one or more scenes.
         /// </param>
         /// <param name="token">Optional token to manually cancel the operation. Note that Unity Scene Manager operations cannot be manually canceled and will continue to run.</param>
         /// <returns>

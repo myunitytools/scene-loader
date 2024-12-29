@@ -38,13 +38,13 @@ namespace MyGameDevTools.SceneLoading.Tests
         [UnityTest]
         public IEnumerator LoadScenes_AssetReference([ValueSource(typeof(SceneTestEnvironment), nameof(SceneTestEnvironment.SceneManagers))] ISceneManager manager, [ValueSource(nameof(_setIndexActiveParameterValues))] int setIndexActive)
         {
-            yield return LoadScenes(manager, new SceneParameters(_assetReferenceLoadSceneInfos, setIndexActive));
+            yield return Load(manager, new SceneParameters(_assetReferenceLoadSceneInfos, setIndexActive));
         }
 
         [UnityTest]
         public IEnumerator UnloadScenes_AssetReference([ValueSource(typeof(SceneTestEnvironment), nameof(SceneTestEnvironment.SceneManagers))] ISceneManager manager)
         {
-            yield return UnloadScenes(manager, new SceneParameters(_assetReferenceLoadSceneInfos));
+            yield return Unload(manager, new SceneParameters(_assetReferenceLoadSceneInfos));
         }
     }
 }

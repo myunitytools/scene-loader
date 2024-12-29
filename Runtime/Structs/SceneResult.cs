@@ -1,4 +1,4 @@
-using System.Text;
+using System.Linq;
 using UnityEngine.SceneManagement;
 
 namespace MyGameDevTools.SceneLoading
@@ -19,7 +19,7 @@ namespace MyGameDevTools.SceneLoading
 
         public SceneResult(Scene scene)
         {
-            _sceneArray = null;
+            _sceneArray = new[] { scene };
             _singleScene = scene;
         }
 
@@ -41,27 +41,7 @@ namespace MyGameDevTools.SceneLoading
             if (!_singleScene.IsValid())
                 return "Empty SceneResult";
 
-            int sceneCount = (_sceneArray == null || _sceneArray.Length == 0) ? 1 : _sceneArray.Length;
-
-            StringBuilder builder = new("{ ");
-            if (sceneCount == 1)
-            {
-                builder.Append(_singleScene.name);
-                builder.Append(" }");
-                return builder.ToString();
-            }
-
-            for (int i = 0; i < sceneCount; i++)
-            {
-                if (i > 0)
-                {
-                    builder.Append(", ");
-                }
-                builder.Append(_sceneArray[i].name);
-            }
-
-            builder.Append(" }");
-            return builder.ToString();
+            return $"{{ {string.Join(", ", _sceneArray.Select(scene => scene.name))} }}";
         }
     }
 }

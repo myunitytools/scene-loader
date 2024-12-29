@@ -286,19 +286,25 @@ namespace MyGameDevTools.SceneLoading
         async ValueTask<SceneResult> TransitionWithIntermediateLoadingAsync(SceneParameters sceneParameters, ILoadSceneInfo intermediateSceneInfo, LoadingBehavior loadingBehavior, CancellationToken token)
         {
             LoadingProgress progress = loadingBehavior.Progress;
-            while (progress.State != LoadingState.Loading && !token.IsCancellationRequested)
-                await Awaitable.NextFrameAsync(token);
+            await WaitForLoadingStateAsync(progress, LoadingState.Loading, token);
 
             await UnloadSourceSceneAsync(token);
 
             Scene[] loadedScenes = await LoadAsync(sceneParameters, progress, token);
             progress.SetState(LoadingState.TargetSceneLoaded);
 
-            while (progress.State != LoadingState.TransitionComplete && !token.IsCancellationRequested)
-                await Awaitable.NextFrameAsync(token);
+            await WaitForLoadingStateAsync(progress, LoadingState.TransitionComplete, token);
 
             await UnloadAsync(new SceneParameters(intermediateSceneInfo), token);
             return new SceneResult(loadedScenes);
+        }
+
+        async ValueTask WaitForLoadingStateAsync(LoadingProgress progress, LoadingState targetState, CancellationToken token = default)
+        {
+            while (progress.State != targetState && !token.IsCancellationRequested)
+            {
+                await Awaitable.NextFrameAsync(token);
+            }
         }
 
         async ValueTask<SceneResult> TransitionWithIntermediateNoLoadingAsync(SceneParameters sceneParameters, ILoadSceneInfo intermediateSceneInfo, CancellationToken token)

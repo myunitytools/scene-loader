@@ -34,7 +34,7 @@ namespace MyGameDevTools.SceneLoading
 
         public readonly bool ShouldSetActive()
         {
-            return _setIndexActive == 0;
+            return _setIndexActive >= 0;
         }
 
         public readonly int GetIndexToActivate()

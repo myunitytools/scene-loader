@@ -22,7 +22,51 @@ namespace MyGameDevTools.SceneLoading.Tests
         public const string ScenePathBase = "Assets/_test";
         public const int DefaultTimeout = 3000;
 
-        public static readonly ILoadSceneInfo[][] MultipleLoadSceneInfoList = new ILoadSceneInfo[][]
+        public static readonly ILoadSceneInfo[] SingleLoadSceneInfoList = new ILoadSceneInfo[]
+        {
+            new LoadSceneInfoName(SceneBuilder.SceneNames[1]),
+            new LoadSceneInfoName(SceneBuilder.ScenePaths[1]),
+            new LoadSceneInfoIndex(1),
+#if ENABLE_ADDRESSABLES
+            new LoadSceneInfoAddress(SceneBuilder.SceneNames[1]),
+#endif
+        };
+
+        public static readonly SceneParameters[] SceneParametersList = new SceneParameters[]
+        {
+            new(SingleLoadSceneInfoList[0], false),
+            new(SingleLoadSceneInfoList[0], true),
+            new(SingleLoadSceneInfoList[1], false),
+            new(SingleLoadSceneInfoList[1], true),
+            new(SingleLoadSceneInfoList[2], false),
+            new(SingleLoadSceneInfoList[2], true),
+#if ENABLE_ADDRESSABLES
+            new(SingleLoadSceneInfoList[3], false),
+            new(SingleLoadSceneInfoList[3], true),
+#endif
+            new(_multipleLoadSceneInfoList[0], -1),
+            new(_multipleLoadSceneInfoList[0], 1),
+            new(_multipleLoadSceneInfoList[1], -1),
+            new(_multipleLoadSceneInfoList[1], 1),
+        };
+        public static readonly SceneParameters[] TransitionSceneParametersList = new SceneParameters[]
+        {
+            new(SingleLoadSceneInfoList[0], true),
+            new(SingleLoadSceneInfoList[1], true),
+            new(SingleLoadSceneInfoList[2], true),
+#if ENABLE_ADDRESSABLES
+            new(SingleLoadSceneInfoList[3], true),
+#endif
+            new(_multipleLoadSceneInfoList[0], 1),
+            new(_multipleLoadSceneInfoList[1], 1),
+        };
+
+        public static readonly ISceneManager[] SceneManagers = new ISceneManager[]
+        {
+            new AdvancedSceneManager(),
+        };
+
+        static readonly ILoadSceneInfo[][] _multipleLoadSceneInfoList = new ILoadSceneInfo[][]
         {
             new ILoadSceneInfo[]
             {
@@ -48,39 +92,6 @@ namespace MyGameDevTools.SceneLoading.Tests
                 new LoadSceneInfoAddress(SceneBuilder.SceneNames[1]),
 #endif
             }
-        };
-
-        public static readonly ILoadSceneInfo[] SingleLoadSceneInfoList = new ILoadSceneInfo[]
-        {
-            new LoadSceneInfoName(SceneBuilder.SceneNames[1]),
-            new LoadSceneInfoName(SceneBuilder.ScenePaths[1]),
-            new LoadSceneInfoIndex(1),
-#if ENABLE_ADDRESSABLES
-            new LoadSceneInfoAddress(SceneBuilder.SceneNames[1]),
-#endif
-        };
-
-        public static readonly SceneParameters[] SceneParametersList = new SceneParameters[]
-        {
-            new(SingleLoadSceneInfoList[0], false),
-            new(SingleLoadSceneInfoList[0], true),
-            new(SingleLoadSceneInfoList[1], false),
-            new(SingleLoadSceneInfoList[1], true),
-            new(SingleLoadSceneInfoList[2], false),
-            new(SingleLoadSceneInfoList[2], true),
-#if ENABLE_ADDRESSABLES
-            new(SingleLoadSceneInfoList[3], false),
-            new(SingleLoadSceneInfoList[3], true),
-#endif
-            new(MultipleLoadSceneInfoList[0], -1),
-            new(MultipleLoadSceneInfoList[0], 1),
-            new(MultipleLoadSceneInfoList[1], -1),
-            new(MultipleLoadSceneInfoList[1], 1),
-        };
-
-        public static readonly ISceneManager[] SceneManagers = new ISceneManager[]
-        {
-            new AdvancedSceneManager(),
         };
 
 #if UNITY_EDITOR

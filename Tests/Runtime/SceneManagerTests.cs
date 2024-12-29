@@ -20,6 +20,9 @@ namespace MyGameDevTools.SceneLoading.Tests
             new LoadSceneInfoName(SceneBuilder.SceneNames[0]),
         };
 
+        static readonly bool[] _setActiveParameterValues = new[] { false, true };
+        static readonly int[] _setIndexActiveParameterValues = new[] { -1, 1 };
+
         int _scenesActivated;
         int _scenesUnloaded;
         int _scenesLoaded;
@@ -237,7 +240,8 @@ namespace MyGameDevTools.SceneLoading.Tests
         }
 
         [UnityTest]
-        public IEnumerator Transition([ValueSource(typeof(SceneTestEnvironment), nameof(SceneTestEnvironment.SceneManagers))] ISceneManager manager, [ValueSource(typeof(SceneTestEnvironment), nameof(SceneTestEnvironment.SceneParametersList))] SceneParameters sceneParameters, [ValueSource(nameof(LoadingSceneInfos))] ILoadSceneInfo loadingScene)
+        public IEnumerator Transition([ValueSource(typeof(SceneTestEnvironment), nameof(SceneTestEnvironment.SceneManagers))] ISceneManager manager, [ValueSource(typeof(SceneTestEnvironment), nameof(SceneTestEnvironment.
+        TransitionSceneParametersList))] SceneParameters sceneParameters, [ValueSource(nameof(LoadingSceneInfos))] ILoadSceneInfo loadingScene)
         {
             yield return Transition_Template(manager, () => manager.TransitionAsync(sceneParameters, loadingScene).AsTask(), sceneParameters.Length, sceneParameters.GetIndexToActivate());
         }
@@ -327,8 +331,7 @@ namespace MyGameDevTools.SceneLoading.Tests
 
             Scene[] loadedScenes = task.Result;
             Assert.AreEqual(sceneCount, loadedScenes.Length);
-            if (setIndexActive >= 0)
-                Assert.AreEqual(loadedScenes[setIndexActive], manager.GetActiveScene());
+            Assert.AreEqual(loadedScenes[setIndexActive], manager.GetActiveScene());
 
             yield return new WaitUntil(() => manager.TotalSceneCount == sceneCount);
         }

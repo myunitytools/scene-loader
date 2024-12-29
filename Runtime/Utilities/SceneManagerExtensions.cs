@@ -224,16 +224,16 @@ namespace MyGameDevTools.SceneLoading
         /// <param name="targetSceneNames">
         /// An array of scenes by their names to transition to.
         /// </param>
-        /// <param name="setIndexActive">
-        /// The index of the scene to be activated as the active scene.
-        /// </param>
         /// <param name="loadingSceneName">
         /// A reference to the scene that's going to be loaded as the transition intermediate (as a loading scene).
         /// If null, the transition will not have an intermediate loading scene.
         /// </param>
+        /// <param name="setIndexActive">
+        /// The index of the scene to be activated as the active scene. It must be greater than or equal 0.
+        /// </param>
         /// <param name="token">Optional token to manually cancel the operation. Note that Unity Scene Manager operations cannot be manually canceled and will continue to run.</param>
         /// <returns>A <see cref="System.Threading.Tasks.ValueTask{TResult}"/> with all scenes loaded.</returns>
-        public static ValueTask<SceneResult> TransitionAsync(this ISceneManager sceneManager, string[] targetSceneNames, int setIndexActive = -1, string loadingSceneName = null, CancellationToken token = default)
+        public static ValueTask<SceneResult> TransitionAsync(this ISceneManager sceneManager, string[] targetSceneNames, string loadingSceneName = null, int setIndexActive = 0, CancellationToken token = default)
         {
             SceneParameters targetParams = new(targetSceneNames.Select(name => (ILoadSceneInfo)new LoadSceneInfoName(name)).ToArray(), setIndexActive);
             ILoadSceneInfo loadingSceneInfo = string.IsNullOrWhiteSpace(loadingSceneName) ? null : new LoadSceneInfoName(loadingSceneName);
@@ -255,19 +255,19 @@ namespace MyGameDevTools.SceneLoading
         /// <param name="targetBuildIndices">
         /// An array of scenes by their build index to transition to.
         /// </param>
-        /// <param name="setIndexActive">
-        /// The index of the scene to be activated as the active scene.
-        /// </param>
         /// <param name="loadingBuildIndex">
         /// A reference to the scene that's going to be loaded as the transition intermediate (as a loading scene).
         /// If null, the transition will not have an intermediate loading scene.
         /// </param>
+        /// <param name="setIndexActive">
+        /// The index of the scene to be activated as the active scene. It must be greater than or equal 0.
+        /// </param>
         /// <param name="token">Optional token to manually cancel the operation. Note that Unity Scene Manager operations cannot be manually canceled and will continue to run.</param>
         /// <returns>A <see cref="System.Threading.Tasks.ValueTask{TResult}"/> with all scenes loaded.</returns>
-        public static ValueTask<SceneResult> TransitionAsync(this ISceneManager sceneManager, int[] targetBuildIndices, int setIndexActive = -1, int? loadingBuildIndex = null, CancellationToken token = default)
+        public static ValueTask<SceneResult> TransitionAsync(this ISceneManager sceneManager, int[] targetBuildIndices, int loadingBuildIndex = -1, int setIndexActive = 0, CancellationToken token = default)
         {
             SceneParameters targetParams = new(targetBuildIndices.Select(index => (ILoadSceneInfo)new LoadSceneInfoIndex(index)).ToArray(), setIndexActive);
-            ILoadSceneInfo loadingSceneInfo = loadingBuildIndex.HasValue ? new LoadSceneInfoIndex(loadingBuildIndex.Value) : null;
+            ILoadSceneInfo loadingSceneInfo = loadingBuildIndex >= 0 ? new LoadSceneInfoIndex(loadingBuildIndex) : null;
             return sceneManager.TransitionAsync(targetParams, loadingSceneInfo, token);
         }
 
@@ -286,18 +286,15 @@ namespace MyGameDevTools.SceneLoading
         /// <param name="targetSceneName">
         /// The target scene name to be transitioned to.
         /// </param>
-        /// <param name="setIndexActive">
-        /// The index of the scene to be activated as the active scene.
-        /// </param>
         /// <param name="loadingSceneName">
         /// A reference to the scene that's going to be loaded as the transition intermediate (as a loading scene).
         /// If null, the transition will not have an intermediate loading scene.
         /// </param>
         /// <param name="token">Optional token to manually cancel the operation. Note that Unity Scene Manager operations cannot be manually canceled and will continue to run.</param>
         /// <returns>A <see cref="System.Threading.Tasks.ValueTask{TResult}"/> with all scenes loaded.</returns>
-        public static ValueTask<SceneResult> TransitionAsync(this ISceneManager sceneManager, string targetSceneName, bool setActive = false, string loadingSceneName = null, CancellationToken token = default)
+        public static ValueTask<SceneResult> TransitionAsync(this ISceneManager sceneManager, string targetSceneName, string loadingSceneName = null, CancellationToken token = default)
         {
-            SceneParameters targetParams = new(new LoadSceneInfoName(targetSceneName), setActive);
+            SceneParameters targetParams = new(new LoadSceneInfoName(targetSceneName), true);
             ILoadSceneInfo loadingSceneInfo = string.IsNullOrWhiteSpace(loadingSceneName) ? null : new LoadSceneInfoName(loadingSceneName);
             return sceneManager.TransitionAsync(targetParams, loadingSceneInfo, token);
         }
@@ -317,19 +314,16 @@ namespace MyGameDevTools.SceneLoading
         /// <param name="targetBuildIndex">
         /// The target scene build index to be transitioned to.
         /// </param>
-        /// <param name="setIndexActive">
-        /// The index of the scene to be activated as the active scene.
-        /// </param>
         /// <param name="loadingBuildIndex">
         /// A reference to the scene that's going to be loaded as the transition intermediate (as a loading scene).
-        /// If null, the transition will not have an intermediate loading scene.
+        /// If -1, the transition will not have an intermediate loading scene.
         /// </param>
         /// <param name="token">Optional token to manually cancel the operation. Note that Unity Scene Manager operations cannot be manually canceled and will continue to run.</param>
         /// <returns>A <see cref="System.Threading.Tasks.ValueTask{TResult}"/> with all scenes loaded.</returns>
-        public static ValueTask<SceneResult> TransitionAsync(this ISceneManager sceneManager, int targetBuildIndex, bool setActive = false, int? loadingBuildIndex = null, CancellationToken token = default)
+        public static ValueTask<SceneResult> TransitionAsync(this ISceneManager sceneManager, int targetBuildIndex, int loadingBuildIndex = -1, CancellationToken token = default)
         {
-            SceneParameters targetParams = new(new LoadSceneInfoIndex(targetBuildIndex), setActive);
-            ILoadSceneInfo loadingSceneInfo = loadingBuildIndex.HasValue ? new LoadSceneInfoIndex(loadingBuildIndex.Value) : null;
+            SceneParameters targetParams = new(new LoadSceneInfoIndex(targetBuildIndex), true);
+            ILoadSceneInfo loadingSceneInfo = loadingBuildIndex >= 0 ? new LoadSceneInfoIndex(loadingBuildIndex) : null;
             return sceneManager.TransitionAsync(targetParams, loadingSceneInfo, token);
         }
 
@@ -349,16 +343,16 @@ namespace MyGameDevTools.SceneLoading
         /// <param name="targetAssetReferences">
         /// An array of scenes by their <see cref="AssetReference"/> to transition to.
         /// </param>
-        /// <param name="setIndexActive">
-        /// The index of the scene to be activated as the active scene.
-        /// </param>
         /// <param name="loadingAssetReference">
         /// A reference to the scene that's going to be loaded as the transition intermediate (as a loading scene).
         /// If null, the transition will not have an intermediate loading scene.
         /// </param>
+        /// <param name="setIndexActive">
+        /// The index of the scene to be activated as the active scene. It must be greater than or equal 0.
+        /// </param>
         /// <param name="token">Optional token to manually cancel the operation. Note that Unity Scene Manager operations cannot be manually canceled and will continue to run.</param>
         /// <returns>A <see cref="System.Threading.Tasks.ValueTask{TResult}"/> with all scenes loaded.</returns>
-        public static ValueTask<SceneResult> TransitionAddressableAsync(this ISceneManager sceneManager, AssetReference[] targetAssetReferences, int setIndexActive = -1, AssetReference loadingAssetReference = null, CancellationToken token = default)
+        public static ValueTask<SceneResult> TransitionAddressableAsync(this ISceneManager sceneManager, AssetReference[] targetAssetReferences, AssetReference loadingAssetReference = null, int setIndexActive = 0, CancellationToken token = default)
         {
             SceneParameters targetParams = new(targetAssetReferences.Select(asset => (ILoadSceneInfo)new LoadSceneInfoAssetReference(asset)).ToArray(), setIndexActive);
             ILoadSceneInfo loadingSceneInfo = loadingAssetReference != null ? new LoadSceneInfoAssetReference(loadingAssetReference) : null;
@@ -380,16 +374,16 @@ namespace MyGameDevTools.SceneLoading
         /// <param name="targetAddresses">
         /// An array of scenes by their addressable addresses to transition to.
         /// </param>
-        /// <param name="setIndexActive">
-        /// The index of the scene to be activated as the active scene.
-        /// </param>
         /// <param name="loadingAddress">
         /// A reference to the scene that's going to be loaded as the transition intermediate (as a loading scene).
         /// If null, the transition will not have an intermediate loading scene.
         /// </param>
+        /// <param name="setIndexActive">
+        /// The index of the scene to be activated as the active scene. It must be greater than or equal 0.
+        /// </param>
         /// <param name="token">Optional token to manually cancel the operation. Note that Unity Scene Manager operations cannot be manually canceled and will continue to run.</param>
         /// <returns>A <see cref="System.Threading.Tasks.ValueTask{TResult}"/> with all scenes loaded.</returns>
-        public static ValueTask<SceneResult> TransitionAddressableAsync(this ISceneManager sceneManager, string[] targetAddresses, int setIndexActive = -1, string loadingAddress = null, CancellationToken token = default)
+        public static ValueTask<SceneResult> TransitionAddressableAsync(this ISceneManager sceneManager, string[] targetAddresses, string loadingAddress = null, int setIndexActive = 0, CancellationToken token = default)
         {
             SceneParameters targetParams = new(targetAddresses.Select(address => (ILoadSceneInfo)new LoadSceneInfoAddress(address)).ToArray(), setIndexActive);
             ILoadSceneInfo loadingSceneInfo = string.IsNullOrWhiteSpace(loadingAddress) ? null : new LoadSceneInfoAddress(loadingAddress);
@@ -411,18 +405,15 @@ namespace MyGameDevTools.SceneLoading
         /// <param name="targetAssetReference">
         /// The target scene <see cref="AssetReference"/> to be transitioned to.
         /// </param>
-        /// <param name="setIndexActive">
-        /// The index of the scene to be activated as the active scene.
-        /// </param>
         /// <param name="loadingAssetReference">
         /// A reference to the scene that's going to be loaded as the transition intermediate (as a loading scene).
         /// If null, the transition will not have an intermediate loading scene.
         /// </param>
         /// <param name="token">Optional token to manually cancel the operation. Note that Unity Scene Manager operations cannot be manually canceled and will continue to run.</param>
         /// <returns>A <see cref="System.Threading.Tasks.ValueTask{TResult}"/> with all scenes loaded.</returns>
-        public static ValueTask<SceneResult> TransitionAddressableAsync(this ISceneManager sceneManager, AssetReference targetAssetReference, bool setActive = false, AssetReference loadingAssetReference = null, CancellationToken token = default)
+        public static ValueTask<SceneResult> TransitionAddressableAsync(this ISceneManager sceneManager, AssetReference targetAssetReference, AssetReference loadingAssetReference = null, CancellationToken token = default)
         {
-            SceneParameters targetParams = new(new LoadSceneInfoAssetReference(targetAssetReference), setActive);
+            SceneParameters targetParams = new(new LoadSceneInfoAssetReference(targetAssetReference), true);
             ILoadSceneInfo loadingSceneInfo = loadingAssetReference != null ? new LoadSceneInfoAssetReference(loadingAssetReference) : null;
             return sceneManager.TransitionAsync(targetParams, loadingSceneInfo, token);
         }
@@ -442,18 +433,15 @@ namespace MyGameDevTools.SceneLoading
         /// <param name="targetAddress">
         /// The target scene addressable address to be transitioned to.
         /// </param>
-        /// <param name="setIndexActive">
-        /// The index of the scene to be activated as the active scene.
-        /// </param>
         /// <param name="loadingAddress">
         /// A reference to the scene that's going to be loaded as the transition intermediate (as a loading scene).
         /// If null, the transition will not have an intermediate loading scene.
         /// </param>
         /// <param name="token">Optional token to manually cancel the operation. Note that Unity Scene Manager operations cannot be manually canceled and will continue to run.</param>
         /// <returns>A <see cref="System.Threading.Tasks.ValueTask{TResult}"/> with all scenes loaded.</returns>
-        public static ValueTask<SceneResult> TransitionAddressableAsync(this ISceneManager sceneManager, string targetAddress, bool setActive = false, string loadingAddress = null, CancellationToken token = default)
+        public static ValueTask<SceneResult> TransitionAddressableAsync(this ISceneManager sceneManager, string targetAddress, string loadingAddress = null, CancellationToken token = default)
         {
-            SceneParameters targetParams = new(new LoadSceneInfoAddress(targetAddress), setActive);
+            SceneParameters targetParams = new(new LoadSceneInfoAddress(targetAddress), true);
             ILoadSceneInfo loadingSceneInfo = string.IsNullOrWhiteSpace(loadingAddress) ? null : new LoadSceneInfoAddress(loadingAddress);
             return sceneManager.TransitionAsync(targetParams, loadingSceneInfo, token);
         }

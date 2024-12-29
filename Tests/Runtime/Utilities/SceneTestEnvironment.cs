@@ -60,6 +60,24 @@ namespace MyGameDevTools.SceneLoading.Tests
 #endif
         };
 
+        public static readonly SceneParameters[] SceneParametersList = new SceneParameters[]
+        {
+            new(SingleLoadSceneInfoList[0], false),
+            new(SingleLoadSceneInfoList[0], true),
+            new(SingleLoadSceneInfoList[1], false),
+            new(SingleLoadSceneInfoList[1], true),
+            new(SingleLoadSceneInfoList[2], false),
+            new(SingleLoadSceneInfoList[2], true),
+#if ENABLE_ADDRESSABLES
+            new(SingleLoadSceneInfoList[3], false),
+            new(SingleLoadSceneInfoList[3], true),
+#endif
+            new(MultipleLoadSceneInfoList[0], -1),
+            new(MultipleLoadSceneInfoList[0], 1),
+            new(MultipleLoadSceneInfoList[1], -1),
+            new(MultipleLoadSceneInfoList[1], 1),
+        };
+
         public static readonly ISceneManager[] SceneManagers = new ISceneManager[]
         {
             new AdvancedSceneManager(),

@@ -159,7 +159,7 @@ namespace MyGameDevTools.SceneLoading
         async ValueTask<SceneResult> LoadScenesAsync_Internal(SceneParameters sceneParameters, IProgress<float> progress, CancellationToken token)
         {
             ILoadSceneInfo[] sceneInfos = sceneParameters.GetLoadSceneInfos();
-            int setIndexActive = sceneParameters.GetIndexActive();
+            int setIndexActive = sceneParameters.GetIndexToActivate();
             int scenesToLoad = sceneInfos.Length;
 
             ISceneData[] sceneDataArray = new ISceneData[scenesToLoad];

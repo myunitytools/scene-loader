@@ -75,7 +75,7 @@ namespace MyGameDevTools.SceneLoading.Tests
             async Awaitable Test()
             {
                 ISceneManager manager = managerCreateFunc();
-                await SceneManagerTests.LoadFirstScene(manager).Task;
+                await SceneManagerTests.LoadFirstScene(manager).ValueTask;
 
                 var task = manager.TransitionAsync(new SceneParameters(targetScene), loadingScene);
                 manager.Dispose();
@@ -100,7 +100,7 @@ namespace MyGameDevTools.SceneLoading.Tests
             async Awaitable Test()
             {
                 ISceneManager manager = managerCreateFunc();
-                await SceneManagerTests.LoadFirstScene(manager).Task;
+                await SceneManagerTests.LoadFirstScene(manager).ValueTask;
 
                 var task = manager.TransitionAsync(new SceneParameters(targetScenes, 0), loadingScene);
                 manager.Dispose();

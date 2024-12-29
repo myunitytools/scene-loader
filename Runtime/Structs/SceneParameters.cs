@@ -2,6 +2,8 @@ namespace MyGameDevTools.SceneLoading
 {
     public readonly struct SceneParameters
     {
+        public readonly int Length => _loadSceneInfoArray.Length;
+
         readonly ILoadSceneInfo[] _loadSceneInfoArray;
         readonly ILoadSceneInfo _singleLoadSceneInfo;
         readonly int _setIndexActive;
@@ -35,7 +37,7 @@ namespace MyGameDevTools.SceneLoading
             return _setIndexActive == 0;
         }
 
-        public readonly int GetIndexActive()
+        public readonly int GetIndexToActivate()
         {
             return _setIndexActive;
         }

@@ -14,6 +14,8 @@ namespace MyGameDevTools.SceneLoading.Tests
     {
         ILoadSceneInfo[] _assetReferenceLoadSceneInfos;
 
+        static readonly int[] _setIndexActiveParameterValues = new[] { -1, 1 };
+
         [OneTimeSetUp]
         public void AssetReferenceSetup()
         {
@@ -34,27 +36,15 @@ namespace MyGameDevTools.SceneLoading.Tests
         }
 
         [UnityTest]
-        public IEnumerator LoadScene_AssetReference([ValueSource(typeof(SceneTestEnvironment), nameof(SceneTestEnvironment.SceneManagers))] ISceneManager manager, [ValueSource(nameof(_setActiveParameterValues))] bool setActive)
-        {
-            yield return LoadScene(manager, _assetReferenceLoadSceneInfos[1], setActive);
-        }
-
-        [UnityTest]
         public IEnumerator LoadScenes_AssetReference([ValueSource(typeof(SceneTestEnvironment), nameof(SceneTestEnvironment.SceneManagers))] ISceneManager manager, [ValueSource(nameof(_setIndexActiveParameterValues))] int setIndexActive)
         {
-            yield return LoadScenes(manager, _assetReferenceLoadSceneInfos, setIndexActive);
+            yield return LoadScenes(manager, new SceneParameters(_assetReferenceLoadSceneInfos, setIndexActive));
         }
 
         [UnityTest]
-        public IEnumerator UnloadScene_AssetReference([ValueSource(typeof(SceneTestEnvironment), nameof(SceneTestEnvironment.SceneManagers))] ISceneManager manager, [ValueSource(nameof(_setActiveParameterValues))] bool setActive)
+        public IEnumerator UnloadScenes_AssetReference([ValueSource(typeof(SceneTestEnvironment), nameof(SceneTestEnvironment.SceneManagers))] ISceneManager manager)
         {
-            yield return UnloadScene(manager, _assetReferenceLoadSceneInfos[1], setActive);
-        }
-
-        [UnityTest]
-        public IEnumerator UnloadScenes_AssetReference([ValueSource(typeof(SceneTestEnvironment), nameof(SceneTestEnvironment.SceneManagers))] ISceneManager manager, [ValueSource(nameof(_setIndexActiveParameterValues))] int setIndexActive)
-        {
-            yield return UnloadScenes(manager, _assetReferenceLoadSceneInfos, setIndexActive);
+            yield return UnloadScenes(manager, new SceneParameters(_assetReferenceLoadSceneInfos));
         }
     }
 }

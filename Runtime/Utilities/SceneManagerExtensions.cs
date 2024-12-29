@@ -473,8 +473,8 @@ namespace MyGameDevTools.SceneLoading
         /// </returns>
         public static ValueTask<SceneResult> UnloadAsync(this ISceneManager sceneManager, string[] sceneNames, CancellationToken token = default)
         {
-            var sceneInfos = sceneNames.Select(name => (ILoadSceneInfo)new LoadSceneInfoName(name)).ToArray();
-            var sceneParams = new SceneParameters(sceneInfos);
+            ILoadSceneInfo[] sceneInfos = sceneNames.Select(name => (ILoadSceneInfo)new LoadSceneInfoName(name)).ToArray();
+            SceneParameters sceneParams = new(sceneInfos);
             return sceneManager.UnloadAsync(sceneParams, token);
         }
 
@@ -492,8 +492,8 @@ namespace MyGameDevTools.SceneLoading
         /// </returns>
         public static ValueTask<SceneResult> UnloadAsync(this ISceneManager sceneManager, int[] buildIndices, CancellationToken token = default)
         {
-            var sceneInfos = buildIndices.Select(index => (ILoadSceneInfo)new LoadSceneInfoIndex(index)).ToArray();
-            var sceneParams = new SceneParameters(sceneInfos);
+            ILoadSceneInfo[] sceneInfos = buildIndices.Select(index => (ILoadSceneInfo)new LoadSceneInfoIndex(index)).ToArray();
+            SceneParameters sceneParams = new(sceneInfos);
             return sceneManager.UnloadAsync(sceneParams, token);
         }
 
@@ -511,8 +511,8 @@ namespace MyGameDevTools.SceneLoading
         /// </returns>
         public static ValueTask<SceneResult> UnloadAsync(this ISceneManager sceneManager, Scene[] scenes, CancellationToken token = default)
         {
-            var sceneInfos = scenes.Select(scene => (ILoadSceneInfo)new LoadSceneInfoScene(scene)).ToArray();
-            var sceneParams = new SceneParameters(sceneInfos);
+            ILoadSceneInfo[] sceneInfos = scenes.Select(scene => (ILoadSceneInfo)new LoadSceneInfoScene(scene)).ToArray();
+            SceneParameters sceneParams = new(sceneInfos);
             return sceneManager.UnloadAsync(sceneParams, token);
         }
 
@@ -530,7 +530,7 @@ namespace MyGameDevTools.SceneLoading
         /// </returns>
         public static ValueTask<SceneResult> UnloadAsync(this ISceneManager sceneManager, string sceneName, CancellationToken token = default)
         {
-            var sceneParams = new SceneParameters(new LoadSceneInfoName(sceneName));
+            SceneParameters sceneParams = new(new LoadSceneInfoName(sceneName));
             return sceneManager.UnloadAsync(sceneParams, token);
         }
 
@@ -548,7 +548,7 @@ namespace MyGameDevTools.SceneLoading
         /// </returns>
         public static ValueTask<SceneResult> UnloadAsync(this ISceneManager sceneManager, int buildIndex, CancellationToken token = default)
         {
-            var sceneParams = new SceneParameters(new LoadSceneInfoIndex(buildIndex));
+            SceneParameters sceneParams = new(new LoadSceneInfoIndex(buildIndex));
             return sceneManager.UnloadAsync(sceneParams, token);
         }
 
@@ -566,7 +566,7 @@ namespace MyGameDevTools.SceneLoading
         /// </returns>
         public static ValueTask<SceneResult> UnloadAsync(this ISceneManager sceneManager, Scene scene, CancellationToken token = default)
         {
-            var sceneParams = new SceneParameters(new LoadSceneInfoScene(scene));
+            SceneParameters sceneParams = new(new LoadSceneInfoScene(scene));
             return sceneManager.UnloadAsync(sceneParams, token);
         }
 
@@ -585,8 +585,8 @@ namespace MyGameDevTools.SceneLoading
         /// </returns>
         public static ValueTask<SceneResult> UnloadAddressableAsync(this ISceneManager sceneManager, AssetReference[] assetReferences, CancellationToken token = default)
         {
-            var sceneInfos = assetReferences.Select(asset => (ILoadSceneInfo)new LoadSceneInfoAssetReference(asset)).ToArray();
-            var sceneParams = new SceneParameters(sceneInfos);
+            ILoadSceneInfo[] sceneInfos = assetReferences.Select(asset => (ILoadSceneInfo)new LoadSceneInfoAssetReference(asset)).ToArray();
+            SceneParameters sceneParams = new(sceneInfos);
             return sceneManager.UnloadAsync(sceneParams, token);
         }
 
@@ -604,8 +604,8 @@ namespace MyGameDevTools.SceneLoading
         /// </returns>
         public static ValueTask<SceneResult> UnloadAddressableAsync(this ISceneManager sceneManager, string[] addresses, CancellationToken token = default)
         {
-            var sceneInfos = addresses.Select(address => (ILoadSceneInfo)new LoadSceneInfoAddress(address)).ToArray();
-            var sceneParams = new SceneParameters(sceneInfos);
+            ILoadSceneInfo[] sceneInfos = addresses.Select(address => (ILoadSceneInfo)new LoadSceneInfoAddress(address)).ToArray();
+            SceneParameters sceneParams = new(sceneInfos);
             return sceneManager.UnloadAsync(sceneParams, token);
         }
 
@@ -623,7 +623,7 @@ namespace MyGameDevTools.SceneLoading
         /// </returns>
         public static ValueTask<SceneResult> UnloadAddressableAsync(this ISceneManager sceneManager, AssetReference assetReference, CancellationToken token = default)
         {
-            var sceneParams = new SceneParameters(new LoadSceneInfoAssetReference(assetReference));
+            SceneParameters sceneParams = new(new LoadSceneInfoAssetReference(assetReference));
             return sceneManager.UnloadAsync(sceneParams, token);
         }
 
@@ -641,7 +641,7 @@ namespace MyGameDevTools.SceneLoading
         /// </returns>
         public static ValueTask<SceneResult> UnloadAddressableAsync(this ISceneManager sceneManager, string address, CancellationToken token = default)
         {
-            var sceneParams = new SceneParameters(new LoadSceneInfoAddress(address));
+            SceneParameters sceneParams = new(new LoadSceneInfoAddress(address));
             return sceneManager.UnloadAsync(sceneParams, token);
         }
 #endif

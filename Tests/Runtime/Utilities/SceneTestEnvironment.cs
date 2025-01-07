@@ -22,6 +22,34 @@ namespace MyGameDevTools.SceneLoading.Tests
         public const string ScenePathBase = "Assets/_test";
         public const int DefaultTimeout = 3000;
 
+        static readonly ILoadSceneInfo[][] _multipleLoadSceneInfoList = new ILoadSceneInfo[][]
+        {
+            new ILoadSceneInfo[]
+            {
+                new LoadSceneInfoName(SceneBuilder.SceneNames[0]),
+                new LoadSceneInfoIndex(1),
+#if ENABLE_ADDRESSABLES
+                new LoadSceneInfoAddress(SceneBuilder.SceneNames[2]),
+                new LoadSceneInfoAddress(SceneBuilder.SceneNames[3]),
+#endif
+                new LoadSceneInfoName(SceneBuilder.ScenePaths[3])
+            },
+            // This list of scenes expects two load scene infos that point to the same source scene,
+            // and validates whether that causes any issues when linking to the target loaded scene.
+            new ILoadSceneInfo[]
+            {
+                new LoadSceneInfoIndex(1),
+                new LoadSceneInfoName(SceneBuilder.SceneNames[1]),
+                new LoadSceneInfoName(SceneBuilder.ScenePaths[1]),
+#if ENABLE_ADDRESSABLES
+                // Since we can't test statically with AssetReference, we should at least validate
+                // that two AsyncOperations with the same addressable source do not cause issues.
+                new LoadSceneInfoAddress(SceneBuilder.SceneNames[1]),
+                new LoadSceneInfoAddress(SceneBuilder.SceneNames[1]),
+#endif
+            }
+        };
+
         public static readonly ILoadSceneInfo[] SingleLoadSceneInfoList = new ILoadSceneInfo[]
         {
             new LoadSceneInfoName(SceneBuilder.SceneNames[1]),
@@ -66,34 +94,6 @@ namespace MyGameDevTools.SceneLoading.Tests
             new AdvancedSceneManager(),
         };
 
-        static readonly ILoadSceneInfo[][] _multipleLoadSceneInfoList = new ILoadSceneInfo[][]
-        {
-            new ILoadSceneInfo[]
-            {
-                new LoadSceneInfoName(SceneBuilder.SceneNames[0]),
-                new LoadSceneInfoIndex(1),
-#if ENABLE_ADDRESSABLES
-                new LoadSceneInfoAddress(SceneBuilder.SceneNames[2]),
-                new LoadSceneInfoAddress(SceneBuilder.SceneNames[3]),
-#endif
-                new LoadSceneInfoName(SceneBuilder.ScenePaths[3])
-            },
-            // This list of scenes expects two load scene infos that point to the same source scene,
-            // and validates whether that causes any issues when linking to the target loaded scene.
-            new ILoadSceneInfo[]
-            {
-                new LoadSceneInfoIndex(1),
-                new LoadSceneInfoName(SceneBuilder.SceneNames[1]),
-                new LoadSceneInfoName(SceneBuilder.ScenePaths[1]),
-#if ENABLE_ADDRESSABLES
-                // Since we can't test statically with AssetReference, we should at least validate
-                // that two AsyncOperations with the same addressable source do not cause issues.
-                new LoadSceneInfoAddress(SceneBuilder.SceneNames[1]),
-                new LoadSceneInfoAddress(SceneBuilder.SceneNames[1]),
-#endif
-            }
-        };
-
 #if UNITY_EDITOR
 #if ENABLE_ADDRESSABLES
         const string _addressableScenePathBase = "Assets/_addressables-test";
@@ -104,6 +104,9 @@ namespace MyGameDevTools.SceneLoading.Tests
         public void Setup()
         {
 #if UNITY_EDITOR
+            if (IsSceneEnvironmentSetup())
+                return;
+
             int sceneCount = SceneBuilder.SceneNames.Length;
             List<EditorBuildSettingsScene> buildScenes = new(sceneCount);
 
@@ -136,6 +139,9 @@ namespace MyGameDevTools.SceneLoading.Tests
         public void Cleanup()
         {
 #if UNITY_EDITOR
+            if (!IsSceneEnvironmentSetup())
+                return;
+
             EditorBuildSettings.scenes = EditorBuildSettings.scenes.Where(scene => !scene.path.StartsWith(ScenePathBase)).ToArray();
 
             if (!Directory.Exists(ScenePathBase))
@@ -161,26 +167,7 @@ namespace MyGameDevTools.SceneLoading.Tests
         public static void ValidateSceneEnvironment()
         {
 #if UNITY_EDITOR
-            var builtScenes = EditorBuildSettings.scenes;
-            Assert.True(hasAllEnvironmentScenes());
-
-            bool hasAllEnvironmentScenes()
-            {
-                foreach (var name in SceneBuilder.SceneNames)
-                {
-                    if (!hasBuiltSceneWithName(name))
-                        return false;
-                }
-                return true;
-            }
-
-            bool hasBuiltSceneWithName(string name)
-            {
-                foreach (var builtScene in builtScenes)
-                    if (builtScene.path.Contains(name))
-                        return true;
-                return false;
-            }
+            Assert.True(IsSceneEnvironmentSetup());
 
 #if ENABLE_ADDRESSABLES
             var operation = Addressables.LoadResourceLocationsAsync(SceneBuilder.SceneNames);
@@ -196,6 +183,29 @@ namespace MyGameDevTools.SceneLoading.Tests
                 return true;
             }
 #endif
+#endif
+        }
+
+        public static bool IsSceneEnvironmentSetup()
+        {
+#if UNITY_EDITOR
+            EditorBuildSettingsScene[] buildScenes = EditorBuildSettings.scenes;
+            foreach (string name in SceneBuilder.SceneNames)
+            {
+                if (!hasBuiltSceneWithName(name, buildScenes))
+                    return false;
+            }
+            return true;
+
+            static bool hasBuiltSceneWithName(string name, EditorBuildSettingsScene[] buildScenes)
+            {
+                foreach (EditorBuildSettingsScene buildScene in buildScenes)
+                    if (buildScene.path.Contains(name))
+                        return true;
+                return false;
+            }
+#else
+            return false;
 #endif
         }
     }

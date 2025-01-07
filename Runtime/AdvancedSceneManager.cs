@@ -150,13 +150,13 @@ namespace MyGameDevTools.SceneLoading
         public ValueTask<SceneResult> LoadAsync(SceneParameters sceneParameters, IProgress<float> progress = null, CancellationToken token = default)
         {
             CancellationTokenSource linkedSource = CancellationTokenSource.CreateLinkedTokenSource(_lifetimeTokenSource.Token, token);
-            return LoadScenesAsync_Internal(sceneParameters, progress, linkedSource.Token);
+            return LoadScenesAsync_Internal(sceneParameters, progress, linkedSource.Token).RunAndDisposeToken(linkedSource);
         }
 
         public ValueTask<SceneResult> UnloadAsync(SceneParameters sceneParameters, CancellationToken token = default)
         {
             CancellationTokenSource linkedSource = CancellationTokenSource.CreateLinkedTokenSource(_lifetimeTokenSource.Token, token);
-            return UnloadScenesAsync_Internal(sceneParameters.GetLoadSceneInfos(), linkedSource.Token);
+            return UnloadScenesAsync_Internal(sceneParameters.GetLoadSceneInfos(), linkedSource.Token).RunAndDisposeToken(linkedSource);
         }
 
         async ValueTask<SceneResult> LoadScenesAsync_Internal(SceneParameters sceneParameters, IProgress<float> progress, CancellationToken token)

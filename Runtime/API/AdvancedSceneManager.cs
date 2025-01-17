@@ -11,7 +11,7 @@ namespace MyGameDevTools.SceneLoading.Api
 {
     public static class AdvancedSceneManager
     {
-        static ISceneManager Instance
+        internal static ISceneManager Instance
         {
             get
             {

@@ -18,7 +18,7 @@ namespace MyGameDevTools.SceneLoading
         /// Creates a new <see cref="ILoadSceneInfo"/> based on the scene's name or path.
         /// The scene must be added to the Build Settings in order to be loaded.
         /// </summary>
-        /// <param name="sceneNameOrPath">`The scene's asset name or path, as displayed in the Build Settings window.</param>
+        /// <param name="sceneNameOrPath">The scene's asset name or path, as displayed in the Build Settings window.</param>
         public LoadSceneInfoName(string sceneNameOrPath)
         {
             if (string.IsNullOrWhiteSpace(sceneNameOrPath))

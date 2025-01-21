@@ -60,6 +60,13 @@ namespace MyGameDevTools.SceneLoading.Tests
 #endif
         };
 
+        public static readonly ILoadSceneInfo[] SingleLoadSceneInfoList_NoAddressable = new ILoadSceneInfo[]
+        {
+            new LoadSceneInfoName(SceneBuilder.SceneNames[1]),
+            new LoadSceneInfoName(SceneBuilder.ScenePaths[1]),
+            new LoadSceneInfoIndex(1),
+        };
+
         public static readonly SceneParameters[] SceneParametersList = new SceneParameters[]
         {
             new(SingleLoadSceneInfoList[0], false),

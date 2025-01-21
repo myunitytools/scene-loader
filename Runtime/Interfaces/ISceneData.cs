@@ -38,6 +38,13 @@ namespace MyGameDevTools.SceneLoading
         void UpdateSceneReference();
 
         /// <summary>
+        /// Returns whether this <see cref="ISceneData"/> can be matched by the given <paramref name="loadSceneInfo"/>.
+        /// If the <paramref name="loadSceneInfo"/> is equal to the <see cref="ISceneData.LoadSceneInfo"/> or has a direct reference to the scene, it returns true.
+        /// </summary>
+        /// <param name="loadSceneInfo"><see cref="ILoadSceneInfo"/> to validate a match.</param>
+        bool MatchesLoadSceneInfo(ILoadSceneInfo loadSceneInfo);
+
+        /// <summary>
         /// Triggers the load async operation and updates the <see cref="AsyncOperation"/> reference.
         /// </summary>
         /// <returns>The load async operation.</returns>

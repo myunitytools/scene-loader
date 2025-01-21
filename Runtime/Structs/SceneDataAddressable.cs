@@ -52,6 +52,15 @@ namespace MyGameDevTools.SceneLoading
             _sceneReference = AsyncOperation.GetResult();
         }
 
+        public bool MatchesLoadSceneInfo(ILoadSceneInfo loadSceneInfo)
+        {
+            return loadSceneInfo.Type switch
+            {
+                LoadSceneInfoType.AssetReference or LoadSceneInfoType.Address => loadSceneInfo.Equals(_loadSceneInfo),
+                _ => loadSceneInfo.CanBeReferenceToScene(_sceneReference),
+            };
+        }
+
         public IAsyncSceneOperation LoadSceneAsync()
         {
             switch (_loadSceneInfo.Type)

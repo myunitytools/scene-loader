@@ -158,15 +158,14 @@ namespace MyGameDevTools.SceneLoading
         /// <summary>
         /// Tries to get an <see cref="ISceneData"/> from a collection of <see cref="ISceneData"/>s that match the given <see cref="ILoadSceneInfo"/>.
         /// </summary>
-        public static bool TryGetSceneDataByLoadSceneInfo(ILoadSceneInfo loadSceneInfo, ICollection<ISceneData> sceneDataList, out ISceneData sceneData)
+        public static bool TryGetSceneDataByLoadSceneInfo(ILoadSceneInfo loadSceneInfo, IEnumerable<ISceneData> sceneDataList, out ISceneData sceneData)
         {
             if (loadSceneInfo == null)
                 throw new ArgumentNullException(nameof(loadSceneInfo));
 
             foreach (ISceneData tempSceneData in sceneDataList)
             {
-                if ((loadSceneInfo.Type == LoadSceneInfoType.SceneHandle && tempSceneData.SceneReference == (Scene)loadSceneInfo.Reference)
-                    || tempSceneData.LoadSceneInfo.Equals(loadSceneInfo))
+                if (tempSceneData.MatchesLoadSceneInfo(loadSceneInfo))
                 {
                     sceneData = tempSceneData;
                     return true;

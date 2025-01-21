@@ -65,6 +65,11 @@ namespace MyGameDevTools.SceneLoading
             Debug.LogWarning($"[{nameof(SceneDataStandard)}] This type of scene data should not have its scene set automatically. Instead, it is expected to set it by calling {nameof(ISceneData.SetSceneReferenceManually)}.");
         }
 
+        public bool MatchesLoadSceneInfo(ILoadSceneInfo loadSceneInfo)
+        {
+            return loadSceneInfo.CanBeReferenceToScene(_sceneReference);
+        }
+
         public IAsyncSceneOperation LoadSceneAsync()
         {
             switch (_loadSceneInfo.Type)

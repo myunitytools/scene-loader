@@ -295,6 +295,48 @@ namespace MyGameDevTools.SceneLoading.Tests
             Assert.Zero(manager.LoadedSceneCount);
         }
 
+        [UnityTest]
+        public IEnumerator Load_ByInfo_UnloadByName([ValueSource(typeof(SceneTestEnvironment), nameof(SceneTestEnvironment.SceneManagers))] ISceneManager manager, [ValueSource(typeof(SceneTestEnvironment), nameof(SceneTestEnvironment.SingleLoadSceneInfoList_NoAddressable))] ILoadSceneInfo sceneInfo)
+        {
+            var task = manager.LoadAsync(new SceneParameters(sceneInfo));
+
+            yield return new WaitTask<SceneResult>(task);
+
+            task = manager.UnloadAsync(SceneBuilder.SceneNames[1]);
+
+            yield return new WaitTask<SceneResult>(task);
+
+            Assert.Zero(manager.LoadedSceneCount);
+        }
+
+        [UnityTest]
+        public IEnumerator Load_ByInfo_UnloadByPath([ValueSource(typeof(SceneTestEnvironment), nameof(SceneTestEnvironment.SceneManagers))] ISceneManager manager, [ValueSource(typeof(SceneTestEnvironment), nameof(SceneTestEnvironment.SingleLoadSceneInfoList_NoAddressable))] ILoadSceneInfo sceneInfo)
+        {
+            var task = manager.LoadAsync(new SceneParameters(sceneInfo));
+
+            yield return new WaitTask<SceneResult>(task);
+
+            task = manager.UnloadAsync(SceneBuilder.ScenePaths[1]);
+
+            yield return new WaitTask<SceneResult>(task);
+
+            Assert.Zero(manager.LoadedSceneCount);
+        }
+
+        [UnityTest]
+        public IEnumerator Load_ByInfo_UnloadByIndex([ValueSource(typeof(SceneTestEnvironment), nameof(SceneTestEnvironment.SceneManagers))] ISceneManager manager, [ValueSource(typeof(SceneTestEnvironment), nameof(SceneTestEnvironment.SingleLoadSceneInfoList_NoAddressable))] ILoadSceneInfo sceneInfo)
+        {
+            var task = manager.LoadAsync(new SceneParameters(sceneInfo));
+
+            yield return new WaitTask<SceneResult>(task);
+
+            task = manager.UnloadAsync(1);
+
+            yield return new WaitTask<SceneResult>(task);
+
+            Assert.Zero(manager.LoadedSceneCount);
+        }
+
         public IEnumerator Load_Template(ISceneManager manager, Func<Task<SceneResult>> loadTask, SimpleProgress progress, int sceneCount, int setIndexActive)
         {
             var reportedScenes = new List<Scene>(sceneCount);

@@ -6,6 +6,18 @@ namespace MyGameDevTools.SceneLoading
 {
     public static class TaskExtensions
     {
+        public static async Task<T> RunAndDisposeToken<T>(this Task<T> valueTask, CancellationTokenSource tokenSource)
+        {
+            try
+            {
+                return await valueTask;
+            }
+            finally
+            {
+                tokenSource.Dispose();
+            }
+        }
+
         public static async void Forget(this Task task, Action<Exception> onException = null)
         {
             try

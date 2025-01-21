@@ -96,8 +96,8 @@ namespace MyGameDevTools.SceneLoading.Api
         /// If null, the transition will not have an intermediate loading scene.
         /// </param>
         /// <param name="token">Optional token to manually cancel the operation. Note that Unity Scene Manager operations cannot be manually canceled and will continue to run.</param>
-        /// <returns>A <see cref="System.Threading.Tasks.ValueTask{TResult}"/> with all scenes loaded.</returns>
-        public static ValueTask<SceneResult> TransitionAsync(SceneParameters sceneParameters, ILoadSceneInfo intermediateSceneReference = default, CancellationToken token = default) => Instance.TransitionAsync(sceneParameters, intermediateSceneReference, token);
+        /// <returns>A <see cref="System.Threading.Tasks.Task{TResult}"/> with all scenes loaded.</returns>
+        public static Task<SceneResult> TransitionAsync(SceneParameters sceneParameters, ILoadSceneInfo intermediateSceneReference = default, CancellationToken token = default) => Instance.TransitionAsync(sceneParameters, intermediateSceneReference, token);
 
         /// <summary>
         /// Loads the target scene or group of scenes provided via a <see cref="SceneParameters"/> struct.
@@ -113,8 +113,8 @@ namespace MyGameDevTools.SceneLoading.Api
         /// <param name="token">
         /// Optional token to manually cancel the operation. Note that Unity Scene Manager operations cannot be manually canceled and will continue to run.
         /// </param>
-        /// <returns>A <see cref="System.Threading.Tasks.ValueTask{TResult}"/> with all scenes loaded.</returns>
-        public static ValueTask<SceneResult> LoadAsync(SceneParameters sceneParameters, IProgress<float> progress = null, CancellationToken token = default) => Instance.LoadAsync(sceneParameters, progress, token);
+        /// <returns>A <see cref="System.Threading.Tasks.Task{TResult}"/> with all scenes loaded.</returns>
+        public static Task<SceneResult> LoadAsync(SceneParameters sceneParameters, IProgress<float> progress = null, CancellationToken token = default) => Instance.LoadAsync(sceneParameters, progress, token);
 
         /// <summary>
         /// Unloads the target scene or group of scenes provided via a <see cref="SceneParameters"/> struct.
@@ -124,11 +124,11 @@ namespace MyGameDevTools.SceneLoading.Api
         /// </param>
         /// <param name="token">Optional token to manually cancel the operation. Note that Unity Scene Manager operations cannot be manually canceled and will continue to run.</param>
         /// <returns>
-        /// A <see cref="System.Threading.Tasks.ValueTask{TResult}"/> with all the unloaded scenes.
+        /// A <see cref="System.Threading.Tasks.Task{TResult}"/> with all the unloaded scenes.
         /// <br/>
         /// Note that in some cases, the returned scenes might no longer have a reference to its native representation, hich means its <see cref="Scene.handle"/> will not point anywhere and you won't be able to perform equal comparisons between scenes.
         /// </returns>
-        public static ValueTask<SceneResult> UnloadAsync(SceneParameters sceneParameters, CancellationToken token = default) => Instance.UnloadAsync(sceneParameters, token);
+        public static Task<SceneResult> UnloadAsync(SceneParameters sceneParameters, CancellationToken token = default) => Instance.UnloadAsync(sceneParameters, token);
 
         /// <summary>
         /// Gets the current active scene.
@@ -176,8 +176,8 @@ namespace MyGameDevTools.SceneLoading.Api
         /// <param name="token">
         /// Optional token to manually cancel the operation. Note that Unity Scene Manager operations cannot be manually canceled and will continue to run.
         /// </param>
-        /// <returns>A <see cref="System.Threading.Tasks.ValueTask{TResult}"/> with all scenes loaded.</returns>
-        public static ValueTask<SceneResult> LoadAsync(string[] sceneNames, int setIndexActive = -1, IProgress<float> progress = null, CancellationToken token = default) => Instance.LoadAsync(sceneNames, setIndexActive, progress, token);
+        /// <returns>A <see cref="System.Threading.Tasks.Task{TResult}"/> with all scenes loaded.</returns>
+        public static Task<SceneResult> LoadAsync(string[] sceneNames, int setIndexActive = -1, IProgress<float> progress = null, CancellationToken token = default) => Instance.LoadAsync(sceneNames, setIndexActive, progress, token);
 
         /// <summary>
         /// Loads the target scenes.
@@ -196,8 +196,8 @@ namespace MyGameDevTools.SceneLoading.Api
         /// <param name="token">
         /// Optional token to manually cancel the operation. Note that Unity Scene Manager operations cannot be manually canceled and will continue to run.
         /// </param>
-        /// <returns>A <see cref="System.Threading.Tasks.ValueTask{TResult}"/> with all scenes loaded.</returns>
-        public static ValueTask<SceneResult> LoadAsync(int[] buildIndices, int setIndexActive = -1, IProgress<float> progress = null, CancellationToken token = default) => Instance.LoadAsync(buildIndices, setIndexActive, progress, token);
+        /// <returns>A <see cref="System.Threading.Tasks.Task{TResult}"/> with all scenes loaded.</returns>
+        public static Task<SceneResult> LoadAsync(int[] buildIndices, int setIndexActive = -1, IProgress<float> progress = null, CancellationToken token = default) => Instance.LoadAsync(buildIndices, setIndexActive, progress, token);
 
         /// <summary>
         /// Loads the target scene.
@@ -216,8 +216,8 @@ namespace MyGameDevTools.SceneLoading.Api
         /// <param name="token">
         /// Optional token to manually cancel the operation. Note that Unity Scene Manager operations cannot be manually canceled and will continue to run.
         /// </param>
-        /// <returns>A <see cref="System.Threading.Tasks.ValueTask{TResult}"/> with all scenes loaded.</returns>
-        public static ValueTask<SceneResult> LoadAsync(string sceneName, bool setActive = false, IProgress<float> progress = null, CancellationToken token = default) => Instance.LoadAsync(sceneName, setActive, progress, token);
+        /// <returns>A <see cref="System.Threading.Tasks.Task{TResult}"/> with all scenes loaded.</returns>
+        public static Task<SceneResult> LoadAsync(string sceneName, bool setActive = false, IProgress<float> progress = null, CancellationToken token = default) => Instance.LoadAsync(sceneName, setActive, progress, token);
 
         /// <summary>
         /// Loads the target scene.
@@ -236,8 +236,8 @@ namespace MyGameDevTools.SceneLoading.Api
         /// <param name="token">
         /// Optional token to manually cancel the operation. Note that Unity Scene Manager operations cannot be manually canceled and will continue to run.
         /// </param>
-        /// <returns>A <see cref="System.Threading.Tasks.ValueTask{TResult}"/> with all scenes loaded.</returns>
-        public static ValueTask<SceneResult> LoadAsync(int buildIndex, bool setActive = false, IProgress<float> progress = null, CancellationToken token = default) => Instance.LoadAsync(buildIndex, setActive, progress, token);
+        /// <returns>A <see cref="System.Threading.Tasks.Task{TResult}"/> with all scenes loaded.</returns>
+        public static Task<SceneResult> LoadAsync(int buildIndex, bool setActive = false, IProgress<float> progress = null, CancellationToken token = default) => Instance.LoadAsync(buildIndex, setActive, progress, token);
 
 #if ENABLE_ADDRESSABLES
         /// <summary>
@@ -257,8 +257,8 @@ namespace MyGameDevTools.SceneLoading.Api
         /// <param name="token">
         /// Optional token to manually cancel the operation. Note that Unity Scene Manager operations cannot be manually canceled and will continue to run.
         /// </param>
-        /// <returns>A <see cref="System.Threading.Tasks.ValueTask{TResult}"/> with all scenes loaded.</returns>
-        public static ValueTask<SceneResult> LoadAddressableAsync(AssetReference[] assetReferences, int setIndexActive = -1, IProgress<float> progress = null, CancellationToken token = default) => Instance.LoadAddressableAsync(assetReferences, setIndexActive, progress, token);
+        /// <returns>A <see cref="System.Threading.Tasks.Task{TResult}"/> with all scenes loaded.</returns>
+        public static Task<SceneResult> LoadAddressableAsync(AssetReference[] assetReferences, int setIndexActive = -1, IProgress<float> progress = null, CancellationToken token = default) => Instance.LoadAddressableAsync(assetReferences, setIndexActive, progress, token);
 
         /// <summary>
         /// Loads the target scenes.
@@ -277,8 +277,8 @@ namespace MyGameDevTools.SceneLoading.Api
         /// <param name="token">
         /// Optional token to manually cancel the operation. Note that Unity Scene Manager operations cannot be manually canceled and will continue to run.
         /// </param>
-        /// <returns>A <see cref="System.Threading.Tasks.ValueTask{TResult}"/> with all scenes loaded.</returns>
-        public static ValueTask<SceneResult> LoadAddressableAsync(string[] addresses, int setIndexActive = -1, IProgress<float> progress = null, CancellationToken token = default) => Instance.LoadAddressableAsync(addresses, setIndexActive, progress, token);
+        /// <returns>A <see cref="System.Threading.Tasks.Task{TResult}"/> with all scenes loaded.</returns>
+        public static Task<SceneResult> LoadAddressableAsync(string[] addresses, int setIndexActive = -1, IProgress<float> progress = null, CancellationToken token = default) => Instance.LoadAddressableAsync(addresses, setIndexActive, progress, token);
 
         /// <summary>
         /// Loads the target scene.
@@ -297,8 +297,8 @@ namespace MyGameDevTools.SceneLoading.Api
         /// <param name="token">
         /// Optional token to manually cancel the operation. Note that Unity Scene Manager operations cannot be manually canceled and will continue to run.
         /// </param>
-        /// <returns>A <see cref="System.Threading.Tasks.ValueTask{TResult}"/> with all scenes loaded.</returns>
-        public static ValueTask<SceneResult> LoadAddressableAsync(AssetReference assetReference, bool setActive = false, IProgress<float> progress = null, CancellationToken token = default) => Instance.LoadAddressableAsync(assetReference, setActive, progress, token);
+        /// <returns>A <see cref="System.Threading.Tasks.Task{TResult}"/> with all scenes loaded.</returns>
+        public static Task<SceneResult> LoadAddressableAsync(AssetReference assetReference, bool setActive = false, IProgress<float> progress = null, CancellationToken token = default) => Instance.LoadAddressableAsync(assetReference, setActive, progress, token);
 
         /// <summary>
         /// Loads the target scene.
@@ -317,8 +317,8 @@ namespace MyGameDevTools.SceneLoading.Api
         /// <param name="token">
         /// Optional token to manually cancel the operation. Note that Unity Scene Manager operations cannot be manually canceled and will continue to run.
         /// </param>
-        /// <returns>A <see cref="System.Threading.Tasks.ValueTask{TResult}"/> with all scenes loaded.</returns>
-        public static ValueTask<SceneResult> LoadAddressableAsync(string address, bool setActive = false, IProgress<float> progress = null, CancellationToken token = default) => Instance.LoadAddressableAsync(address, setActive, progress, token);
+        /// <returns>A <see cref="System.Threading.Tasks.Task{TResult}"/> with all scenes loaded.</returns>
+        public static Task<SceneResult> LoadAddressableAsync(string address, bool setActive = false, IProgress<float> progress = null, CancellationToken token = default) => Instance.LoadAddressableAsync(address, setActive, progress, token);
 #endif
 
         /// <summary>
@@ -344,8 +344,8 @@ namespace MyGameDevTools.SceneLoading.Api
         /// The index of the scene to be activated as the active scene. It must be greater than or equal 0.
         /// </param>
         /// <param name="token">Optional token to manually cancel the operation. Note that Unity Scene Manager operations cannot be manually canceled and will continue to run.</param>
-        /// <returns>A <see cref="System.Threading.Tasks.ValueTask{TResult}"/> with all scenes loaded.</returns>
-        public static ValueTask<SceneResult> TransitionAsync(string[] targetSceneNames, string loadingSceneName = null, int setIndexActive = 0, CancellationToken token = default) => Instance.TransitionAsync(targetSceneNames, loadingSceneName, setIndexActive, token);
+        /// <returns>A <see cref="System.Threading.Tasks.Task{TResult}"/> with all scenes loaded.</returns>
+        public static Task<SceneResult> TransitionAsync(string[] targetSceneNames, string loadingSceneName = null, int setIndexActive = 0, CancellationToken token = default) => Instance.TransitionAsync(targetSceneNames, loadingSceneName, setIndexActive, token);
 
         /// <summary>
         /// Triggers a transition to a group of scenes.
@@ -370,8 +370,8 @@ namespace MyGameDevTools.SceneLoading.Api
         /// The index of the scene to be activated as the active scene. It must be greater than or equal 0.
         /// </param>
         /// <param name="token">Optional token to manually cancel the operation. Note that Unity Scene Manager operations cannot be manually canceled and will continue to run.</param>
-        /// <returns>A <see cref="System.Threading.Tasks.ValueTask{TResult}"/> with all scenes loaded.</returns>
-        public static ValueTask<SceneResult> TransitionAsync(int[] targetBuildIndices, int loadingBuildIndex = -1, int setIndexActive = 0, CancellationToken token = default) => Instance.TransitionAsync(targetBuildIndices, loadingBuildIndex, setIndexActive, token);
+        /// <returns>A <see cref="System.Threading.Tasks.Task{TResult}"/> with all scenes loaded.</returns>
+        public static Task<SceneResult> TransitionAsync(int[] targetBuildIndices, int loadingBuildIndex = -1, int setIndexActive = 0, CancellationToken token = default) => Instance.TransitionAsync(targetBuildIndices, loadingBuildIndex, setIndexActive, token);
 
         /// <summary>
         /// Triggers a transition to the target scene.
@@ -393,8 +393,8 @@ namespace MyGameDevTools.SceneLoading.Api
         /// If null, the transition will not have an intermediate loading scene.
         /// </param>
         /// <param name="token">Optional token to manually cancel the operation. Note that Unity Scene Manager operations cannot be manually canceled and will continue to run.</param>
-        /// <returns>A <see cref="System.Threading.Tasks.ValueTask{TResult}"/> with all scenes loaded.</returns>
-        public static ValueTask<SceneResult> TransitionAsync(string targetSceneName, string loadingSceneName = null, CancellationToken token = default) => Instance.TransitionAsync(targetSceneName, loadingSceneName, token);
+        /// <returns>A <see cref="System.Threading.Tasks.Task{TResult}"/> with all scenes loaded.</returns>
+        public static Task<SceneResult> TransitionAsync(string targetSceneName, string loadingSceneName = null, CancellationToken token = default) => Instance.TransitionAsync(targetSceneName, loadingSceneName, token);
 
         /// <summary>
         /// Triggers a transition to the target scene.
@@ -416,8 +416,8 @@ namespace MyGameDevTools.SceneLoading.Api
         /// If -1, the transition will not have an intermediate loading scene.
         /// </param>
         /// <param name="token">Optional token to manually cancel the operation. Note that Unity Scene Manager operations cannot be manually canceled and will continue to run.</param>
-        /// <returns>A <see cref="System.Threading.Tasks.ValueTask{TResult}"/> with all scenes loaded.</returns>
-        public static ValueTask<SceneResult> TransitionAsync(int targetBuildIndex, int loadingBuildIndex = -1, CancellationToken token = default) => Instance.TransitionAsync(targetBuildIndex, loadingBuildIndex, token);
+        /// <returns>A <see cref="System.Threading.Tasks.Task{TResult}"/> with all scenes loaded.</returns>
+        public static Task<SceneResult> TransitionAsync(int targetBuildIndex, int loadingBuildIndex = -1, CancellationToken token = default) => Instance.TransitionAsync(targetBuildIndex, loadingBuildIndex, token);
 
 #if ENABLE_ADDRESSABLES
         /// <summary>
@@ -443,8 +443,8 @@ namespace MyGameDevTools.SceneLoading.Api
         /// The index of the scene to be activated as the active scene. It must be greater than or equal 0.
         /// </param>
         /// <param name="token">Optional token to manually cancel the operation. Note that Unity Scene Manager operations cannot be manually canceled and will continue to run.</param>
-        /// <returns>A <see cref="System.Threading.Tasks.ValueTask{TResult}"/> with all scenes loaded.</returns>
-        public static ValueTask<SceneResult> TransitionAddressableAsync(AssetReference[] targetAssetReferences, AssetReference loadingAssetReference = null, int setIndexActive = 0, CancellationToken token = default) => Instance.TransitionAddressableAsync(targetAssetReferences, loadingAssetReference, setIndexActive, token);
+        /// <returns>A <see cref="System.Threading.Tasks.Task{TResult}"/> with all scenes loaded.</returns>
+        public static Task<SceneResult> TransitionAddressableAsync(AssetReference[] targetAssetReferences, AssetReference loadingAssetReference = null, int setIndexActive = 0, CancellationToken token = default) => Instance.TransitionAddressableAsync(targetAssetReferences, loadingAssetReference, setIndexActive, token);
 
         /// <summary>
         /// Triggers a transition to a group of scenes.
@@ -469,8 +469,8 @@ namespace MyGameDevTools.SceneLoading.Api
         /// The index of the scene to be activated as the active scene. It must be greater than or equal 0.
         /// </param>
         /// <param name="token">Optional token to manually cancel the operation. Note that Unity Scene Manager operations cannot be manually canceled and will continue to run.</param>
-        /// <returns>A <see cref="System.Threading.Tasks.ValueTask{TResult}"/> with all scenes loaded.</returns>
-        public static ValueTask<SceneResult> TransitionAddressableAsync(string[] targetAddresses, string loadingAddress = null, int setIndexActive = 0, CancellationToken token = default) => Instance.TransitionAddressableAsync(targetAddresses, loadingAddress, setIndexActive, token);
+        /// <returns>A <see cref="System.Threading.Tasks.Task{TResult}"/> with all scenes loaded.</returns>
+        public static Task<SceneResult> TransitionAddressableAsync(string[] targetAddresses, string loadingAddress = null, int setIndexActive = 0, CancellationToken token = default) => Instance.TransitionAddressableAsync(targetAddresses, loadingAddress, setIndexActive, token);
 
         /// <summary>
         /// Triggers a transition to the target scene.
@@ -492,8 +492,8 @@ namespace MyGameDevTools.SceneLoading.Api
         /// If null, the transition will not have an intermediate loading scene.
         /// </param>
         /// <param name="token">Optional token to manually cancel the operation. Note that Unity Scene Manager operations cannot be manually canceled and will continue to run.</param>
-        /// <returns>A <see cref="System.Threading.Tasks.ValueTask{TResult}"/> with all scenes loaded.</returns>
-        public static ValueTask<SceneResult> TransitionAddressableAsync(AssetReference targetAssetReference, AssetReference loadingAssetReference = null, CancellationToken token = default) => Instance.TransitionAddressableAsync(targetAssetReference, loadingAssetReference, token);
+        /// <returns>A <see cref="System.Threading.Tasks.Task{TResult}"/> with all scenes loaded.</returns>
+        public static Task<SceneResult> TransitionAddressableAsync(AssetReference targetAssetReference, AssetReference loadingAssetReference = null, CancellationToken token = default) => Instance.TransitionAddressableAsync(targetAssetReference, loadingAssetReference, token);
 
         /// <summary>
         /// Triggers a transition to the target scene.
@@ -515,8 +515,8 @@ namespace MyGameDevTools.SceneLoading.Api
         /// If null, the transition will not have an intermediate loading scene.
         /// </param>
         /// <param name="token">Optional token to manually cancel the operation. Note that Unity Scene Manager operations cannot be manually canceled and will continue to run.</param>
-        /// <returns>A <see cref="System.Threading.Tasks.ValueTask{TResult}"/> with all scenes loaded.</returns>
-        public static ValueTask<SceneResult> TransitionAddressableAsync(string targetAddress, string loadingAddress = null, CancellationToken token = default) => Instance.TransitionAddressableAsync(targetAddress, loadingAddress, token);
+        /// <returns>A <see cref="System.Threading.Tasks.Task{TResult}"/> with all scenes loaded.</returns>
+        public static Task<SceneResult> TransitionAddressableAsync(string targetAddress, string loadingAddress = null, CancellationToken token = default) => Instance.TransitionAddressableAsync(targetAddress, loadingAddress, token);
 #endif
 
         /// <summary>
@@ -527,11 +527,11 @@ namespace MyGameDevTools.SceneLoading.Api
         /// </param>
         /// <param name="token">Optional token to manually cancel the operation. Note that Unity Scene Manager operations cannot be manually canceled and will continue to run.</param>
         /// <returns>
-        /// A <see cref="System.Threading.Tasks.ValueTask{TResult}"/> with all the unloaded scenes.
+        /// A <see cref="System.Threading.Tasks.Task{TResult}"/> with all the unloaded scenes.
         /// <br/>
         /// Note that in some cases, the returned scenes might no longer have a reference to its native representation, hich means its <see cref="Scene.handle"/> will not point anywhere and you won't be able to perform equal comparisons between scenes.
         /// </returns>
-        public static ValueTask<SceneResult> UnloadAsync(string[] sceneNames, CancellationToken token = default) => Instance.UnloadAsync(sceneNames, token);
+        public static Task<SceneResult> UnloadAsync(string[] sceneNames, CancellationToken token = default) => Instance.UnloadAsync(sceneNames, token);
 
         /// <summary>
         /// Unloads the target scene or group of scenes.
@@ -541,11 +541,11 @@ namespace MyGameDevTools.SceneLoading.Api
         /// </param>
         /// <param name="token">Optional token to manually cancel the operation. Note that Unity Scene Manager operations cannot be manually canceled and will continue to run.</param>
         /// <returns>
-        /// A <see cref="System.Threading.Tasks.ValueTask{TResult}"/> with all the unloaded scenes.
+        /// A <see cref="System.Threading.Tasks.Task{TResult}"/> with all the unloaded scenes.
         /// <br/>
         /// Note that in some cases, the returned scenes might no longer have a reference to its native representation, hich means its <see cref="Scene.handle"/> will not point anywhere and you won't be able to perform equal comparisons between scenes.
         /// </returns>
-        public static ValueTask<SceneResult> UnloadAsync(int[] buildIndices, CancellationToken token = default) => Instance.UnloadAsync(buildIndices, token);
+        public static Task<SceneResult> UnloadAsync(int[] buildIndices, CancellationToken token = default) => Instance.UnloadAsync(buildIndices, token);
 
         /// <summary>
         /// Unloads the target scene or group of scenes.
@@ -555,11 +555,11 @@ namespace MyGameDevTools.SceneLoading.Api
         /// </param>
         /// <param name="token">Optional token to manually cancel the operation. Note that Unity Scene Manager operations cannot be manually canceled and will continue to run.</param>
         /// <returns>
-        /// A <see cref="System.Threading.Tasks.ValueTask{TResult}"/> with all the unloaded scenes.
+        /// A <see cref="System.Threading.Tasks.Task{TResult}"/> with all the unloaded scenes.
         /// <br/>
         /// Note that in some cases, the returned scenes might no longer have a reference to its native representation, hich means its <see cref="Scene.handle"/> will not point anywhere and you won't be able to perform equal comparisons between scenes.
         /// </returns>
-        public static ValueTask<SceneResult> UnloadAsync(Scene[] scenes, CancellationToken token = default) => Instance.UnloadAsync(scenes, token);
+        public static Task<SceneResult> UnloadAsync(Scene[] scenes, CancellationToken token = default) => Instance.UnloadAsync(scenes, token);
 
         /// <summary>
         /// Unloads the target scene or group of scenes.
@@ -569,11 +569,11 @@ namespace MyGameDevTools.SceneLoading.Api
         /// </param>
         /// <param name="token">Optional token to manually cancel the operation. Note that Unity Scene Manager operations cannot be manually canceled and will continue to run.</param>
         /// <returns>
-        /// A <see cref="System.Threading.Tasks.ValueTask{TResult}"/> with all the unloaded scenes.
+        /// A <see cref="System.Threading.Tasks.Task{TResult}"/> with all the unloaded scenes.
         /// <br/>
         /// Note that in some cases, the returned scenes might no longer have a reference to its native representation, hich means its <see cref="Scene.handle"/> will not point anywhere and you won't be able to perform equal comparisons between scenes.
         /// </returns>
-        public static ValueTask<SceneResult> UnloadAsync(string sceneName, CancellationToken token = default) => Instance.UnloadAsync(sceneName, token);
+        public static Task<SceneResult> UnloadAsync(string sceneName, CancellationToken token = default) => Instance.UnloadAsync(sceneName, token);
 
         /// <summary>
         /// Unloads the target scene or group of scenes.
@@ -583,11 +583,11 @@ namespace MyGameDevTools.SceneLoading.Api
         /// </param>
         /// <param name="token">Optional token to manually cancel the operation. Note that Unity Scene Manager operations cannot be manually canceled and will continue to run.</param>
         /// <returns>
-        /// A <see cref="System.Threading.Tasks.ValueTask{TResult}"/> with all the unloaded scenes.
+        /// A <see cref="System.Threading.Tasks.Task{TResult}"/> with all the unloaded scenes.
         /// <br/>
         /// Note that in some cases, the returned scenes might no longer have a reference to its native representation, hich means its <see cref="Scene.handle"/> will not point anywhere and you won't be able to perform equal comparisons between scenes.
         /// </returns>
-        public static ValueTask<SceneResult> UnloadAsync(int buildIndex, CancellationToken token = default) => Instance.UnloadAsync(buildIndex, token);
+        public static Task<SceneResult> UnloadAsync(int buildIndex, CancellationToken token = default) => Instance.UnloadAsync(buildIndex, token);
 
         /// <summary>
         /// Unloads the target scene or group of scenes.
@@ -597,11 +597,11 @@ namespace MyGameDevTools.SceneLoading.Api
         /// </param>
         /// <param name="token">Optional token to manually cancel the operation. Note that Unity Scene Manager operations cannot be manually canceled and will continue to run.</param>
         /// <returns>
-        /// A <see cref="System.Threading.Tasks.ValueTask{TResult}"/> with all the unloaded scenes.
+        /// A <see cref="System.Threading.Tasks.Task{TResult}"/> with all the unloaded scenes.
         /// <br/>
         /// Note that in some cases, the returned scenes might no longer have a reference to its native representation, hich means its <see cref="Scene.handle"/> will not point anywhere and you won't be able to perform equal comparisons between scenes.
         /// </returns>
-        public static ValueTask<SceneResult> UnloadAsync(Scene scene, CancellationToken token = default) => Instance.UnloadAsync(scene, token);
+        public static Task<SceneResult> UnloadAsync(Scene scene, CancellationToken token = default) => Instance.UnloadAsync(scene, token);
 
 #if ENABLE_ADDRESSABLES
         /// <summary>
@@ -612,11 +612,11 @@ namespace MyGameDevTools.SceneLoading.Api
         /// </param>
         /// <param name="token">Optional token to manually cancel the operation. Note that Unity Scene Manager operations cannot be manually canceled and will continue to run.</param>
         /// <returns>
-        /// A <see cref="System.Threading.Tasks.ValueTask{TResult}"/> with all the unloaded scenes.
+        /// A <see cref="System.Threading.Tasks.Task{TResult}"/> with all the unloaded scenes.
         /// <br/>
         /// Note that in some cases, the returned scenes might no longer have a reference to its native representation, hich means its <see cref="Scene.handle"/> will not point anywhere and you won't be able to perform equal comparisons between scenes.
         /// </returns>
-        public static ValueTask<SceneResult> UnloadAddressableAsync(AssetReference[] assetReferences, CancellationToken token = default) => Instance.UnloadAddressableAsync(assetReferences, token);
+        public static Task<SceneResult> UnloadAddressableAsync(AssetReference[] assetReferences, CancellationToken token = default) => Instance.UnloadAddressableAsync(assetReferences, token);
 
         /// <summary>
         /// Unloads the target scene or group of scenes.
@@ -626,11 +626,11 @@ namespace MyGameDevTools.SceneLoading.Api
         /// </param>
         /// <param name="token">Optional token to manually cancel the operation. Note that Unity Scene Manager operations cannot be manually canceled and will continue to run.</param>
         /// <returns>
-        /// A <see cref="System.Threading.Tasks.ValueTask{TResult}"/> with all the unloaded scenes.
+        /// A <see cref="System.Threading.Tasks.Task{TResult}"/> with all the unloaded scenes.
         /// <br/>
         /// Note that in some cases, the returned scenes might no longer have a reference to its native representation, hich means its <see cref="Scene.handle"/> will not point anywhere and you won't be able to perform equal comparisons between scenes.
         /// </returns>
-        public static ValueTask<SceneResult> UnloadAddressableAsync(string[] addresses, CancellationToken token = default) => Instance.UnloadAddressableAsync(addresses, token);
+        public static Task<SceneResult> UnloadAddressableAsync(string[] addresses, CancellationToken token = default) => Instance.UnloadAddressableAsync(addresses, token);
 
         /// <summary>
         /// Unloads the target scene or group of scenes.
@@ -640,11 +640,11 @@ namespace MyGameDevTools.SceneLoading.Api
         /// </param>
         /// <param name="token">Optional token to manually cancel the operation. Note that Unity Scene Manager operations cannot be manually canceled and will continue to run.</param>
         /// <returns>
-        /// A <see cref="System.Threading.Tasks.ValueTask{TResult}"/> with all the unloaded scenes.
+        /// A <see cref="System.Threading.Tasks.Task{TResult}"/> with all the unloaded scenes.
         /// <br/>
         /// Note that in some cases, the returned scenes might no longer have a reference to its native representation, hich means its <see cref="Scene.handle"/> will not point anywhere and you won't be able to perform equal comparisons between scenes.
         /// </returns>
-        public static ValueTask<SceneResult> UnloadAddressableAsync(AssetReference assetReference, CancellationToken token = default) => Instance.UnloadAddressableAsync(assetReference, token);
+        public static Task<SceneResult> UnloadAddressableAsync(AssetReference assetReference, CancellationToken token = default) => Instance.UnloadAddressableAsync(assetReference, token);
 
         /// <summary>
         /// Unloads the target scene or group of scenes.
@@ -654,11 +654,11 @@ namespace MyGameDevTools.SceneLoading.Api
         /// </param>
         /// <param name="token">Optional token to manually cancel the operation. Note that Unity Scene Manager operations cannot be manually canceled and will continue to run.</param>
         /// <returns>
-        /// A <see cref="System.Threading.Tasks.ValueTask{TResult}"/> with all the unloaded scenes.
+        /// A <see cref="System.Threading.Tasks.Task{TResult}"/> with all the unloaded scenes.
         /// <br/>
         /// Note that in some cases, the returned scenes might no longer have a reference to its native representation, hich means its <see cref="Scene.handle"/> will not point anywhere and you won't be able to perform equal comparisons between scenes.
         /// </returns>
-        public static ValueTask<SceneResult> UnloadAddressableAsync(string address, CancellationToken token = default) => Instance.UnloadAddressableAsync(address, token);
+        public static Task<SceneResult> UnloadAddressableAsync(string address, CancellationToken token = default) => Instance.UnloadAddressableAsync(address, token);
 #endif
         #endregion
     }

@@ -69,50 +69,50 @@ namespace MyGameDevTools.SceneLoading.Tests
         [UnityTest]
         public IEnumerator Transition_Extension_ByIndex([ValueSource(typeof(SceneTestEnvironment), nameof(SceneTestEnvironment.SceneManagers))] ISceneManager manager)
         {
-            yield return Transition_Template(manager, () => manager.TransitionAsync(1, 0).AsTask(), 1, 0);
+            yield return Transition_Template(manager, () => manager.TransitionAsync(1, 0), 1, 0);
         }
 
         [UnityTest]
         public IEnumerator Transition_Extension_ByIndex_Multiple([ValueSource(typeof(SceneTestEnvironment), nameof(SceneTestEnvironment.SceneManagers))] ISceneManager manager)
         {
-            yield return Transition_Template(manager, () => manager.TransitionAsync(_buildIndexes, 0).AsTask(), _buildIndexes.Length, 0);
+            yield return Transition_Template(manager, () => manager.TransitionAsync(_buildIndexes, 0), _buildIndexes.Length, 0);
         }
 
         [UnityTest]
         public IEnumerator Transition_Extension_ByName([ValueSource(typeof(SceneTestEnvironment), nameof(SceneTestEnvironment.SceneManagers))] ISceneManager manager)
         {
-            yield return Transition_Template(manager, () => manager.TransitionAsync(SceneBuilder.SceneNames[1], SceneBuilder.SceneNames[0]).AsTask(), 1, 0);
+            yield return Transition_Template(manager, () => manager.TransitionAsync(SceneBuilder.SceneNames[1], SceneBuilder.SceneNames[0]), 1, 0);
         }
 
         [UnityTest]
         public IEnumerator Transition_Extension_ByName_Multiple([ValueSource(typeof(SceneTestEnvironment), nameof(SceneTestEnvironment.SceneManagers))] ISceneManager manager)
         {
-            yield return Transition_Template(manager, () => manager.TransitionAsync(SceneBuilder.SceneNames, SceneBuilder.ScenePaths[0]).AsTask(), SceneBuilder.SceneNames.Length, 0);
+            yield return Transition_Template(manager, () => manager.TransitionAsync(SceneBuilder.SceneNames, SceneBuilder.ScenePaths[0]), SceneBuilder.SceneNames.Length, 0);
         }
 
 #if ENABLE_ADDRESSABLES
         [UnityTest]
         public IEnumerator Transition_Extension_Addressable_ByAddress([ValueSource(typeof(SceneTestEnvironment), nameof(SceneTestEnvironment.SceneManagers))] ISceneManager manager)
         {
-            yield return Transition_Template(manager, () => manager.TransitionAddressableAsync(SceneBuilder.SceneNames[1], SceneBuilder.SceneNames[0]).AsTask(), 1, 0);
+            yield return Transition_Template(manager, () => manager.TransitionAddressableAsync(SceneBuilder.SceneNames[1], SceneBuilder.SceneNames[0]), 1, 0);
         }
 
         [UnityTest]
         public IEnumerator Transition_Extension_Addressable_ByAddress_Multiple([ValueSource(typeof(SceneTestEnvironment), nameof(SceneTestEnvironment.SceneManagers))] ISceneManager manager)
         {
-            yield return Transition_Template(manager, () => manager.TransitionAddressableAsync(SceneBuilder.SceneNames, SceneBuilder.SceneNames[0]).AsTask(), SceneBuilder.SceneNames.Length, 0);
+            yield return Transition_Template(manager, () => manager.TransitionAddressableAsync(SceneBuilder.SceneNames, SceneBuilder.SceneNames[0]), SceneBuilder.SceneNames.Length, 0);
         }
 
         [UnityTest]
         public IEnumerator Transition_Extension_Addressable_ByAssetReference([ValueSource(typeof(SceneTestEnvironment), nameof(SceneTestEnvironment.SceneManagers))] ISceneManager manager)
         {
-            yield return Transition_Template(manager, () => manager.TransitionAddressableAsync(_assetReferences[1], _assetReferences[0]).AsTask(), 1, 0);
+            yield return Transition_Template(manager, () => manager.TransitionAddressableAsync(_assetReferences[1], _assetReferences[0]), 1, 0);
         }
 
         [UnityTest]
         public IEnumerator Transition_Extension_Addressable_ByAssetReference_Multiple([ValueSource(typeof(SceneTestEnvironment), nameof(SceneTestEnvironment.SceneManagers))] ISceneManager manager)
         {
-            yield return Transition_Template(manager, () => manager.TransitionAddressableAsync(_assetReferences, _assetReferences[0]).AsTask(), SceneBuilder.SceneNames.Length, 0);
+            yield return Transition_Template(manager, () => manager.TransitionAddressableAsync(_assetReferences, _assetReferences[0]), SceneBuilder.SceneNames.Length, 0);
         }
 #endif
 

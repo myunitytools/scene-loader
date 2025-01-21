@@ -136,7 +136,7 @@ namespace MyGameDevTools.SceneLoading
             throw new ArgumentException($"[{GetType().Name}] Could not find any loaded scene with the name '{name}'.", nameof(name));
         }
 
-        public ValueTask<SceneResult> TransitionAsync(SceneParameters sceneParameters, ILoadSceneInfo intermediateSceneReference = null, CancellationToken token = default)
+        public Task<SceneResult> TransitionAsync(SceneParameters sceneParameters, ILoadSceneInfo intermediateSceneReference = null, CancellationToken token = default)
         {
             if (!sceneParameters.ShouldSetActive())
                 throw new ArgumentException($"[{GetType().Name}] You need to provide a SceneParameters object with a valid 'setIndexActive' value to perform scene transitions.", nameof(sceneParameters));
@@ -147,19 +147,19 @@ namespace MyGameDevTools.SceneLoading
                 : TransitionWithIntermediateAsync(sceneParameters, intermediateSceneReference, linkedSource.Token).RunAndDisposeToken(linkedSource);
         }
 
-        public ValueTask<SceneResult> LoadAsync(SceneParameters sceneParameters, IProgress<float> progress = null, CancellationToken token = default)
+        public Task<SceneResult> LoadAsync(SceneParameters sceneParameters, IProgress<float> progress = null, CancellationToken token = default)
         {
             CancellationTokenSource linkedSource = CancellationTokenSource.CreateLinkedTokenSource(_lifetimeTokenSource.Token, token);
             return LoadScenesAsync_Internal(sceneParameters, progress, linkedSource.Token).RunAndDisposeToken(linkedSource);
         }
 
-        public ValueTask<SceneResult> UnloadAsync(SceneParameters sceneParameters, CancellationToken token = default)
+        public Task<SceneResult> UnloadAsync(SceneParameters sceneParameters, CancellationToken token = default)
         {
             CancellationTokenSource linkedSource = CancellationTokenSource.CreateLinkedTokenSource(_lifetimeTokenSource.Token, token);
             return UnloadScenesAsync_Internal(sceneParameters.GetLoadSceneInfos(), linkedSource.Token).RunAndDisposeToken(linkedSource);
         }
 
-        async ValueTask<SceneResult> LoadScenesAsync_Internal(SceneParameters sceneParameters, IProgress<float> progress, CancellationToken token)
+        async Task<SceneResult> LoadScenesAsync_Internal(SceneParameters sceneParameters, IProgress<float> progress, CancellationToken token)
         {
             ILoadSceneInfo[] sceneInfos = sceneParameters.GetLoadSceneInfos();
             int setIndexActive = sceneParameters.GetIndexToActivate();
@@ -195,7 +195,7 @@ namespace MyGameDevTools.SceneLoading
             return new SceneResult(SceneDataUtilities.GetScenesFromSceneDataArray(sceneDataArray));
         }
 
-        async ValueTask<SceneResult> UnloadScenesAsync_Internal(ILoadSceneInfo[] sceneInfos, CancellationToken token)
+        async Task<SceneResult> UnloadScenesAsync_Internal(ILoadSceneInfo[] sceneInfos, CancellationToken token)
         {
             if (sceneInfos == null || sceneInfos.Length == 0)
                 throw new ArgumentException($"[{GetType().Name}] Provided scene group is null or empty.", nameof(sceneInfos));
@@ -243,7 +243,7 @@ namespace MyGameDevTools.SceneLoading
             return new SceneResult(SceneDataUtilities.GetScenesFromSceneDataArray(sceneDataArray));
         }
 
-        async ValueTask<SceneResult> TransitionDirectlyAsync(SceneParameters sceneParameters, CancellationToken token)
+        async Task<SceneResult> TransitionDirectlyAsync(SceneParameters sceneParameters, CancellationToken token)
         {
             // If only one scene is loaded, we need to create a temporary scene for transition.
             Scene tempScene = default;
@@ -262,7 +262,7 @@ namespace MyGameDevTools.SceneLoading
             return new SceneResult(loadedScenes);
         }
 
-        async ValueTask<SceneResult> TransitionWithIntermediateAsync(SceneParameters sceneParameters, ILoadSceneInfo intermediateSceneInfo, CancellationToken token)
+        async Task<SceneResult> TransitionWithIntermediateAsync(SceneParameters sceneParameters, ILoadSceneInfo intermediateSceneInfo, CancellationToken token)
         {
             Scene loadingScene;
             try
@@ -286,7 +286,7 @@ namespace MyGameDevTools.SceneLoading
                 : await TransitionWithIntermediateNoLoadingAsync(sceneParameters, intermediateSceneInfo, token);
         }
 
-        async ValueTask<SceneResult> TransitionWithIntermediateLoadingAsync(SceneParameters sceneParameters, ILoadSceneInfo intermediateSceneInfo, LoadingBehavior loadingBehavior, CancellationToken token)
+        async Task<SceneResult> TransitionWithIntermediateLoadingAsync(SceneParameters sceneParameters, ILoadSceneInfo intermediateSceneInfo, LoadingBehavior loadingBehavior, CancellationToken token)
         {
             LoadingProgress progress = loadingBehavior.Progress;
             await WaitForLoadingStateAsync(progress, LoadingState.Loading, token);
@@ -302,7 +302,7 @@ namespace MyGameDevTools.SceneLoading
             return new SceneResult(loadedScenes);
         }
 
-        async ValueTask WaitForLoadingStateAsync(LoadingProgress progress, LoadingState targetState, CancellationToken token = default)
+        async Task WaitForLoadingStateAsync(LoadingProgress progress, LoadingState targetState, CancellationToken token = default)
         {
             while (progress.State != targetState && !token.IsCancellationRequested)
             {
@@ -310,7 +310,7 @@ namespace MyGameDevTools.SceneLoading
             }
         }
 
-        async ValueTask<SceneResult> TransitionWithIntermediateNoLoadingAsync(SceneParameters sceneParameters, ILoadSceneInfo intermediateSceneInfo, CancellationToken token)
+        async Task<SceneResult> TransitionWithIntermediateNoLoadingAsync(SceneParameters sceneParameters, ILoadSceneInfo intermediateSceneInfo, CancellationToken token)
         {
             await UnloadSourceSceneAsync(token);
             Scene[] loadedScenes = await LoadAsync(sceneParameters, token: token);
@@ -318,11 +318,11 @@ namespace MyGameDevTools.SceneLoading
             return new SceneResult(loadedScenes);
         }
 
-        ValueTask<SceneResult> UnloadSourceSceneAsync(CancellationToken token)
+        Task<SceneResult> UnloadSourceSceneAsync(CancellationToken token)
         {
             Scene sourceScene = GetActiveScene();
             if (!sourceScene.IsValid())
-                return default;
+                return Task.FromResult<SceneResult>(default);
 
             return UnloadAsync(new SceneParameters(new LoadSceneInfoScene(sourceScene)), token);
         }

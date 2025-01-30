@@ -1,3 +1,4 @@
+using System;
 using UnityEngine.SceneManagement;
 
 namespace MyGameDevTools.SceneLoading
@@ -7,6 +8,11 @@ namespace MyGameDevTools.SceneLoading
     /// </summary>
     public interface IAsyncSceneOperation
     {
+        /// <summary>
+        /// Event fired when the async operation is done.
+        /// </summary>
+        event Action Completed;
+
         /// <summary>
         /// Progress of the load/unload operation from 0 to 1 (float).
         /// </summary>

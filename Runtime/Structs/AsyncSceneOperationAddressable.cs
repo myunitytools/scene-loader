@@ -7,15 +7,17 @@ using UnityEngine.SceneManagement;
 namespace MyGameDevTools.SceneLoading
 {
     /// <summary>
-    /// Struct to implement <see cref="IAsyncSceneOperation"/> with the addressable <see cref="AsyncOperationHandle<SceneInstance>"/>.
+    /// Implementation of <see cref="IAsyncSceneOperation"/> with the addressable <see cref="AsyncOperationHandle<SceneInstance>"/>.
     /// </summary>
-    public readonly struct AsyncSceneOperationAddressable : IAsyncSceneOperation
+    public class AsyncSceneOperationAddressable : IAsyncSceneOperation
     {
-        public readonly float Progress => _asyncOperationHandle.PercentComplete;
+        public event Action Completed;
 
-        public readonly bool IsDone => _asyncOperationHandle.IsDone;
+        public float Progress => _asyncOperationHandle.PercentComplete;
 
-        public readonly bool HasDirectReferenceToScene => true;
+        public bool IsDone => _asyncOperationHandle.IsDone;
+
+        public bool HasDirectReferenceToScene => true;
 
         public AsyncOperationHandle<SceneInstance> AsyncOperationHandle => _asyncOperationHandle;
 
@@ -27,6 +29,7 @@ namespace MyGameDevTools.SceneLoading
                 throw new ArgumentException($"Cannot create a {nameof(AsyncSceneOperationAddressable)} from an invalid AsyncOperationHandle.", nameof(operationHandle));
 
             _asyncOperationHandle = operationHandle;
+            _asyncOperationHandle.CompletedTypeless += OnAsyncOperationCompleted;
         }
 
         public Scene GetResult()
@@ -37,6 +40,12 @@ namespace MyGameDevTools.SceneLoading
             }
 
             return _asyncOperationHandle.Result.Scene;
+        }
+
+        void OnAsyncOperationCompleted(AsyncOperationHandle asyncOperation)
+        {
+            _asyncOperationHandle.CompletedTypeless -= OnAsyncOperationCompleted;
+            Completed?.Invoke();
         }
     }
 }

@@ -21,19 +21,19 @@ namespace MyGameDevTools.SceneLoading
         void Awake()
         {
             Progress = new LoadingProgress();
-            Progress.StateChanged += OnLoadingStateChange;
+            Progress.LoadingCompleted += OnLoadingCompleted;
         }
 
         void Start()
         {
             if (!waitForScriptedStart)
-                Progress.SetState(LoadingState.Loading);
+                Progress.StartTransition();
         }
 
-        void OnLoadingStateChange(LoadingState loadingState)
+        void OnLoadingCompleted()
         {
-            if (loadingState == LoadingState.TargetSceneLoaded && !waitForScriptedEnd)
-                Progress.SetState(LoadingState.TransitionComplete);
+            if (!waitForScriptedEnd)
+                Progress.EndTransition();
         }
     }
 }

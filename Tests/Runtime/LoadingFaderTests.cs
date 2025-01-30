@@ -34,18 +34,17 @@ namespace MyGameDevTools.SceneLoading.Tests
             loadingFader.fadeTime = .2f;
             loadingFader.loadingBehavior = loadingBehavior;
 
-            Assert.AreEqual(LoadingState.WaitingToStart, progress.State);
             Assert.AreEqual(0, canvasGroup.alpha);
             yield return new WaitForSeconds(loadingFader.fadeTime * 2);
 
-            Assert.AreEqual(LoadingState.Loading, progress.State);
+            Assert.True(progress.TransitionInTask.Task.IsCompletedSuccessfully);
             Assert.AreEqual(1, canvasGroup.alpha);
 
-            progress.SetState(LoadingState.TargetSceneLoaded);
+            progress.SetLoadingCompleted();
 
             yield return new WaitForSeconds(loadingFader.fadeTime * 2);
 
-            Assert.AreEqual(LoadingState.TransitionComplete, progress.State);
+            Assert.True(progress.TransitionOutTask.Task.IsCompletedSuccessfully);
             Assert.AreEqual(0, canvasGroup.alpha);
         }
     }

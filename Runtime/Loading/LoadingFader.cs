@@ -28,14 +28,8 @@ namespace MyGameDevTools.SceneLoading
         void Start()
         {
             _loadingProgress = loadingBehavior.Progress;
-            _loadingProgress.StateChanged += OnLoadingStateChanged;
+            _loadingProgress.LoadingCompleted += FadeOut;
             FadeIn();
-        }
-
-        void OnLoadingStateChanged(LoadingState loadingState)
-        {
-            if (loadingState == LoadingState.TargetSceneLoaded)
-                FadeOut();
         }
 
         void FadeOut()
@@ -44,7 +38,7 @@ namespace MyGameDevTools.SceneLoading
             IEnumerator fadeOutRoutine()
             {
                 yield return FadeRoutine(_fadeOutCurve);
-                _loadingProgress.SetState(LoadingState.TransitionComplete);
+                _loadingProgress.EndTransition();
             }
         }
 
@@ -54,7 +48,7 @@ namespace MyGameDevTools.SceneLoading
             IEnumerator fadeInRoutine()
             {
                 yield return FadeRoutine(_fadeInCurve);
-                _loadingProgress.SetState(LoadingState.Loading);
+                _loadingProgress.StartTransition();
             }
         }
 

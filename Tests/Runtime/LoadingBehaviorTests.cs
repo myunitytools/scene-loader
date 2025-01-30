@@ -25,16 +25,12 @@ namespace MyGameDevTools.SceneLoading.Tests
             var behavior = new GameObject().AddComponent<LoadingBehavior>();
             var progress = behavior.Progress;
 
-            Assert.AreEqual(LoadingState.WaitingToStart, progress.State);
-
             yield return null;
 
-            Assert.AreEqual(LoadingState.Loading, progress.State);
-
             progress.Report(1);
-            progress.SetState(LoadingState.TargetSceneLoaded);
+            progress.SetLoadingCompleted();
 
-            Assert.AreEqual(LoadingState.TransitionComplete, progress.State);
+            Assert.True(progress.TransitionOutTask.Task.Result);
         }
 
         [UnityTest]
@@ -45,23 +41,23 @@ namespace MyGameDevTools.SceneLoading.Tests
             behavior.waitForScriptedStart = true;
             behavior.waitForScriptedEnd = true;
 
+            bool completed = false;
+
             var progress = behavior.Progress;
-
-            Assert.AreEqual(LoadingState.WaitingToStart, progress.State);
-
+            progress.LoadingCompleted += () => completed = true;
             yield return null;
 
-            Assert.AreEqual(LoadingState.WaitingToStart, progress.State);
+            progress.StartTransition();
+            Assert.True(progress.TransitionInTask.Task.Result);
 
-            progress.SetState(LoadingState.Loading);
             progress.Report(1);
-            progress.SetState(LoadingState.TargetSceneLoaded);
+            progress.SetLoadingCompleted();
 
             yield return null;
-            Assert.AreEqual(LoadingState.TargetSceneLoaded, progress.State);
+            Assert.True(completed);
 
-            progress.SetState(LoadingState.TransitionComplete);
-            Assert.AreEqual(LoadingState.TransitionComplete, progress.State);
+            progress.EndTransition();
+            Assert.True(progress.TransitionOutTask.Task.Result);
         }
     }
 }

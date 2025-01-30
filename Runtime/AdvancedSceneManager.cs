@@ -173,11 +173,7 @@ namespace MyGameDevTools.SceneLoading
                 sceneDataArray[i].LoadSceneAsync();
             }
 
-            while (!SceneDataUtilities.HasCompletedAllSceneLoadOperations(sceneDataArray) && !token.IsCancellationRequested)
-            {
-                await Awaitable.NextFrameAsync(token);
-                progress?.Report(SceneDataUtilities.GetAverageSceneLoadOperationProgress(sceneDataArray));
-            }
+            await PollProgressAsync(sceneDataArray, progress, token);
 
             token.ThrowIfCancellationRequested();
 
@@ -200,9 +196,10 @@ namespace MyGameDevTools.SceneLoading
             if (sceneInfos == null || sceneInfos.Length == 0)
                 throw new ArgumentException($"[{GetType().Name}] Provided scene group is null or empty.", nameof(sceneInfos));
 
-            ISceneData[] sceneDataArray = SceneDataUtilities.GetLoadedSceneDatasWithLoadSceneInfos(sceneInfos, _loadedScenes);
-
             int sceneCount = sceneInfos.Length;
+            ISceneData[] sceneDataArray = SceneDataUtilities.GetLoadedSceneDatasWithLoadSceneInfos(sceneInfos, _loadedScenes);
+            Task[] loadTasks = new Task[sceneCount];
+
             ISceneData tempSceneData;
             int i;
             for (i = 0; i < sceneCount; i++)
@@ -210,25 +207,20 @@ namespace MyGameDevTools.SceneLoading
                 tempSceneData = sceneDataArray[i];
                 _loadedScenes.Remove(tempSceneData);
                 _unloadingScenes.Add(tempSceneData);
-                tempSceneData.UnloadSceneAsync();
+                loadTasks[i] = UnityTaskUtilities.FromAsyncOperation(sceneDataArray[i].UnloadSceneAsync(), token);
             }
 
-            while (!SceneDataUtilities.HasCompletedAllSceneLoadOperations(sceneDataArray) && !token.IsCancellationRequested)
+            try
             {
-                // Since the unload operation will keep running even after cancelling the task,
-                // we need to remove these scenes from the unloading scenes list on cancellation.
-                try
+                await Task.WhenAll(loadTasks);
+            }
+            catch (OperationCanceledException exception)
+            {
+                for (i = 0; i < sceneCount; i++)
                 {
-                    await Awaitable.NextFrameAsync(token);
+                    _unloadingScenes.Remove(sceneDataArray[i]);
                 }
-                catch (OperationCanceledException exception)
-                {
-                    for (i = 0; i < sceneCount; i++)
-                    {
-                        _unloadingScenes.Remove(sceneDataArray[i]);
-                    }
-                    throw exception;
-                }
+                throw exception;
             }
 
             for (i = 0; i < sceneCount; i++)
@@ -245,7 +237,7 @@ namespace MyGameDevTools.SceneLoading
 
         async Task<SceneResult> TransitionDirectlyAsync(SceneParameters sceneParameters, CancellationToken token)
         {
-            // If only one scene is loaded, we need to create a temporary scene for transition.
+            // If only one scene is loaded, create a temporary scene for transition.
             Scene tempScene = default;
             if (LoadedSceneCount <= 1)
             {
@@ -257,30 +249,18 @@ namespace MyGameDevTools.SceneLoading
 
             if (tempScene.IsValid())
             {
-                await Awaitable.FromAsyncOperation(SceneManager.UnloadSceneAsync(tempScene));
+                IAsyncSceneOperation unloadOperation = new AsyncSceneOperationStandard(SceneManager.UnloadSceneAsync(tempScene));
+                await UnityTaskUtilities.FromAsyncOperation(unloadOperation, token);
             }
             return new SceneResult(loadedScenes);
         }
 
         async Task<SceneResult> TransitionWithIntermediateAsync(SceneParameters sceneParameters, ILoadSceneInfo intermediateSceneInfo, CancellationToken token)
         {
-            Scene loadingScene;
-            try
-            {
-                loadingScene = await LoadAsync(new SceneParameters(intermediateSceneInfo, false), token: token);
-            }
-            catch
-            {
-                throw;
-            }
-
+            Scene loadingScene = await LoadAsync(new SceneParameters(intermediateSceneInfo, false), token: token);
             intermediateSceneInfo = new LoadSceneInfoScene(loadingScene);
 
-#if UNITY_2023_2_OR_NEWER
             LoadingBehavior loadingBehavior = UnityEngine.Object.FindObjectsByType<LoadingBehavior>(FindObjectsSortMode.None).FirstOrDefault(l => l.gameObject.scene == loadingScene);
-#else
-            LoadingBehavior loadingBehavior = UnityEngine.Object.FindObjectsOfType<LoadingBehavior>().FirstOrDefault(l => l.gameObject.scene == loadingScene);
-#endif
             return loadingBehavior
                 ? await TransitionWithIntermediateLoadingAsync(sceneParameters, intermediateSceneInfo, loadingBehavior, token)
                 : await TransitionWithIntermediateNoLoadingAsync(sceneParameters, intermediateSceneInfo, token);
@@ -289,25 +269,15 @@ namespace MyGameDevTools.SceneLoading
         async Task<SceneResult> TransitionWithIntermediateLoadingAsync(SceneParameters sceneParameters, ILoadSceneInfo intermediateSceneInfo, LoadingBehavior loadingBehavior, CancellationToken token)
         {
             LoadingProgress progress = loadingBehavior.Progress;
-            await WaitForLoadingStateAsync(progress, LoadingState.Loading, token);
-
+            await progress.TransitionInTask.Task;
             await UnloadSourceSceneAsync(token);
 
             Scene[] loadedScenes = await LoadAsync(sceneParameters, progress, token);
-            progress.SetState(LoadingState.TargetSceneLoaded);
+            progress.SetLoadingCompleted();
 
-            await WaitForLoadingStateAsync(progress, LoadingState.TransitionComplete, token);
-
+            await progress.TransitionOutTask.Task;
             await UnloadAsync(new SceneParameters(intermediateSceneInfo), token);
             return new SceneResult(loadedScenes);
-        }
-
-        async Task WaitForLoadingStateAsync(LoadingProgress progress, LoadingState targetState, CancellationToken token = default)
-        {
-            while (progress.State != targetState && !token.IsCancellationRequested)
-            {
-                await Awaitable.NextFrameAsync(token);
-            }
         }
 
         async Task<SceneResult> TransitionWithIntermediateNoLoadingAsync(SceneParameters sceneParameters, ILoadSceneInfo intermediateSceneInfo, CancellationToken token)
@@ -316,6 +286,17 @@ namespace MyGameDevTools.SceneLoading
             Scene[] loadedScenes = await LoadAsync(sceneParameters, token: token);
             await UnloadAsync(new SceneParameters(intermediateSceneInfo), token);
             return new SceneResult(loadedScenes);
+        }
+
+        async Task PollProgressAsync(ISceneData[] sceneDataArray, IProgress<float> progress, CancellationToken token = default)
+        {
+            bool isDone = false;
+            while (!isDone && !token.IsCancellationRequested)
+            {
+                await Task.Yield();
+                isDone = SceneDataUtilities.HasCompletedAllSceneLoadOperations(sceneDataArray);
+                progress?.Report(SceneDataUtilities.GetAverageSceneLoadOperationProgress(sceneDataArray));
+            }
         }
 
         Task<SceneResult> UnloadSourceSceneAsync(CancellationToken token)

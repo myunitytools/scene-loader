@@ -8,14 +8,12 @@ namespace MyGameDevTools.SceneLoading.Tests
         public void SetState_Test()
         {
             var progress = new LoadingProgress();
-            Assert.AreEqual(LoadingState.WaitingToStart, progress.State);
 
-            LoadingState cachedState = default;
-            progress.StateChanged += state => cachedState = state;
+            bool completed = false;
+            progress.LoadingCompleted += () => completed = true;
 
-            progress.SetState(LoadingState.Loading);
-            Assert.AreEqual(LoadingState.Loading, progress.State);
-            Assert.AreEqual(progress.State, cachedState);
+            progress.SetLoadingCompleted();
+            Assert.True(completed);
         }
 
         [Test]

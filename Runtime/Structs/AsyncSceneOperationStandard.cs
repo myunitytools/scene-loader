@@ -5,27 +5,36 @@ using UnityEngine.SceneManagement;
 namespace MyGameDevTools.SceneLoading
 {
     /// <summary>
-    /// Struct to implement <see cref="IAsyncSceneOperation"/> with the non-addressable <see cref="AsyncOperation"/>.
+    /// Implementation of <see cref="IAsyncSceneOperation"/> with the non-addressable <see cref="AsyncOperation"/>.
     /// </summary>
-    public readonly struct AsyncSceneOperationStandard : IAsyncSceneOperation
+    public class AsyncSceneOperationStandard : IAsyncSceneOperation
     {
-        public readonly float Progress => _asyncOperation.progress;
+        public event Action Completed;
 
-        public readonly bool IsDone => _asyncOperation.isDone;
+        public float Progress => _asyncOperation.progress;
 
-        public readonly bool HasDirectReferenceToScene => false;
+        public bool IsDone => _asyncOperation.isDone;
+
+        public bool HasDirectReferenceToScene => false;
 
         readonly AsyncOperation _asyncOperation;
 
         public AsyncSceneOperationStandard(AsyncOperation operation)
         {
             _asyncOperation = operation ?? throw new ArgumentException($"Cannot create a {nameof(AsyncSceneOperationStandard)} without a valid AsyncOperation instance.", nameof(operation));
+            _asyncOperation.completed += OnAsyncOperationCompleted;
         }
 
         public Scene GetResult()
         {
             Debug.LogWarning($"{nameof(AsyncSceneOperationStandard)} cannot link directly to the loaded scene due to SceneManager API limitations.");
             return default;
+        }
+
+        void OnAsyncOperationCompleted(AsyncOperation asyncOperation)
+        {
+            _asyncOperation.completed -= OnAsyncOperationCompleted;
+            Completed?.Invoke();
         }
     }
 }
